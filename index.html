@@ -1,4 +1,197 @@
-<!DOCTYPE html>
+// Gerar relatório ATUALIZADO (com fotos integradas)
+        function gerarRelatorio() {
+            try {
+                if (!validarFormulario()) return;
+
+                const form = document.getElementById('fiscalizacaoForm');
+                if (!form) throw new Error('Formulário não encontrado');
+
+                const formData = new FormData(form);
+                const dados = Object.fromEntries(formData.entries());
+
+                // Obter dados dos checkboxes
+                const servicosSelecionados = Array.from(document.querySelectorAll('input[name="tipoServico"]:checked'))
+                    .map(cb => cb.value);
+                const formasAcesso = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked'))
+                    .map(cb => cb.value);
+                const especialidades = Array.from(document.querySelectorAll('input[name="especialidades"]:checked'))
+                    .map(cb => cb.value);
+
+                // NOVO: Gerar seção de fotos se existirem
+                let secaoFotos = '';
+                const totalFotos = Object.values(fotosFiscalizacao).reduce((acc, arr) => acc + arr.length, 0);
+                
+                if (totalFotos > 0) {
+                    secaoFotos = `
+                        <h3>📸 2.15. DOCUMENTAÇÃO FOTOGRÁFICA</h3>
+                        <p><strong>Total de fotos anexadas:</strong> ${totalFotos}</p>
+                    `;
+                    
+                    Object.keys(fotosFiscalizacao).forEach(categoria => {
+                        if (fotosFiscalizacao[categoria].length > 0) {
+                            secaoFotos += `
+                                <h4>${getCategoriaName(categoria)}</h4>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 15px 0;">
+                            `;
+                            
+                            });
+                            
+                            secaoFotos += '</div>';
+                        }
+                    });
+                }
+
+                let relatorio = `
+                    <div style="page-break-after: always;">
+                        <p style="text-align: center; margin-bottom: 30px;"><strong>Seja o presente voto submetido à deliberação da plenária.</strong></p>
+                        
+                        <h3>ESTE VOTO ANALISARÁ O SEGUINTE SERVIÇO:</h3>
+                        <ul>
+                            ${servicosSelecionados.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                        
+                        <h3>1. DOCUMENTOS DISPONIBILIZADOS:</h3>
+                        <p><strong>Parecer(s) Técnico(s) nº:</strong> ${dados.pareceres_tecnicos || '_'.repeat(50)}</p>
+                        <p><strong>Nota(s) Técnica(s) nº:</strong> ${dados.notas_tecnicas || '_'.repeat(50)}</p>
+                        <p><strong>Plano de Ação Ano:</strong> ${dados.plano_acao_ano || '____'} &nbsp;&nbsp;&nbsp; <strong>Relatório de Atividades Ano:</strong> ${dados.relatorio_atividades_ano || '____'}</p>
+                        
+                        <h3>2. DA VISITA</h3>
+                        <p><strong>Nome da Entidade Visitada:</strong> ${dados.nome_entidade || '____'}</p>
+                        <p><strong>CNPJ:</strong> ${dados.cnpj_entidade || '____'}</p>
+                        <p><strong>2.1. Data:</strong> ${dados.data_visita ? new Date(dados.data_visita).toLocaleDateString('pt-BR') : '____'}</p>
+                        <p><strong>2.2. Horário:</strong> ${dados.horario_visita === 'matutino' ? '☑ matutino ☐ vespertino' : '☐ matutino ☑ vespertino'}</p>
+                        <p><strong>2.3. Nome de quem recebeu o conselheiro na instituição:</strong> ${dados.nome_recebeu || '____'}<br>
+                        <strong>Função:</strong> ${dados.funcao_recebeu || '____'}</p>
+                        
+                        <h4>2.4. Endereço(s) visitado(s):</h4>
+                        ${dados.endereco_1 ? `<p><strong>1:</strong> ${dados.endereco_1} - Licença de Funcionamento: ${dados.licenca_1 === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>` : ''}
+                        ${dados.endereco_2 ? `<p><strong>2:</strong> ${dados.endereco_2} - Licença de Funcionamento: ${dados.licenca_2 === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>` : ''}
+                        ${dados.endereco_3 ? `<p><strong>3:</strong> ${dados.endereco_3} - Licença de Funcionamento: ${dados.licenca_3 === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>` : ''}
+                        
+                        <h4>2.5. Público-alvo:</h4>
+                        <table border="1" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr><th>Público</th><th>CDI/DF</th><th>CDCA/DF</th></tr>
+                            <tr><td>Pessoas idosas (mais de 60 anos)</td><td>${dados.cdi_idosos === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</td><td>não se aplica</td></tr>
+                            <tr><td>Crianças e adolescentes (até 18 anos)</td><td>não se aplica</td><td>${dados.cdca_criancas === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</td></tr>
+                            <tr><td>Famílias</td><td>${dados.cdi_familias === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</td><td>${dados.cdca_familias === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</td></tr>
+                            <tr><td>Adultos (entre 18 a 59 anos)</td><td>não se aplica</td><td>não se aplica</td></tr>
+                        </table>
+                        
+                        <h4>2.6. Formas de acesso dos usuários nos serviços/ações:</h4>
+                        <ul>
+                            ${formasAcesso.map(forma => `<li>☑ ${forma}</li>`).join('')}
+                            ${dados.outras_formas ? `<li>☑ Outros: ${dados.outras_formas}</li>` : ''}
+                        </ul>
+                        
+                        <h4>2.7. Equipe de profissionais:</h4>
+                        <p><strong>Nº de voluntários:</strong> ${dados.num_voluntarios || '____'} &nbsp;&nbsp;&nbsp; <strong>Nº de contratados:</strong> ${dados.num_contratados || '____'}</p>
+                        
+                        <h4>2.8. Especialidades que atuam na oferta socioassistencial:</h4>
+                        <ul>
+                            ${especialidades.map(esp => `<li>☑ ${esp}</li>`).join('')}
+                            ${dados.outras_especialidades ? `<li>☑ outros: ${dados.outras_especialidades}</li>` : ''}
+                        </ul>
+                        
+                        <h4>2.9. Infraestrutura:</h4>
+                        <p><strong>a) O Espaço é:</strong> ${dados.tipo_espaco === 'próprio' ? '☑ próprio' : '☐ próprio'} ${dados.tipo_espaco === 'alugado' ? '☑ alugado' : '☐ alugado'} ${dados.tipo_espaco === 'cedido' ? '☑ cedido' : '☐ cedido'}</p>
+                        <p><strong>b) Atende aos critérios de acessibilidade?</strong> ${dados.acessibilidade === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.obs_acessibilidade ? `<p><strong>Observações:</strong> ${dados.obs_acessibilidade}</p>` : ''}
+                        <p><strong>c) Compartilha o espaço com outros serviços?</strong> ${dados.compartilha_espaco === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.obs_compartilhamento ? `<p><strong>Observações:</strong> ${dados.obs_compartilhamento}</p>` : ''}
+                        <p><strong>d) O espaço atende de forma satisfatória a execução da oferta socioassistencial?</strong> ${dados.espaco_satisfatorio === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.obs_espaco ? `<p><strong>Observações:</strong> ${dados.obs_espaco}</p>` : ''}
+                        
+                        <h4>2.10. Do caráter contínuo e permanente:</h4>
+                        <p><strong>a) Possui atividades de Dezembro a Dezembro?</strong> ${dados.atividades_continuas === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        <p><strong>b) Possui recesso/férias coletivas?</strong> ${dados.recesso_ferias === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        
+                        <h4>2.11. As ações ofertadas são totalmente gratuitas?</h4>
+                        <p>${dados.acoes_gratuitas === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.especificar_nao_gratuitas ? `<p><strong>Especifique:</strong> ${dados.especificar_nao_gratuitas}</p>` : ''}
+                        ${dados.especificar_bpc ? `<p><strong>Recebe BPC. Especifique:</strong> ${dados.especificar_bpc}</p>` : ''}
+                        
+                        <h4>2.12. As ações efetivamente executadas correspondem à oferta para a qual possui inscrição?</h4>
+                        <p>${dados.acoes_correspondem === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.obs_acoes_correspondem ? `<p><strong>Observações:</strong> ${dados.obs_acoes_correspondem}</p>` : ''}
+                        
+                        <h4>2.13. Articulação com a rede setorial SUAS e outras redes:</h4>
+                        <table border="1" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <tr><th>Rede</th><th>Sim</th><th>Não</th><th>Observações</th></tr>
+                            <tr><td>CRAS</td><td>${dados.articulacao_cras === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_cras === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_cras || ''}</td></tr>
+                            <tr><td>CREAS</td><td>${dados.articulacao_creas === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_creas === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_creas || ''}</td></tr>
+                            <tr><td>Saúde</td><td>${dados.articulacao_saude === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_saude === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_saude || ''}</td></tr>
+                            <tr><td>Educação</td><td>${dados.articulacao_educacao === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_educacao === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_educacao || ''}</td></tr>
+                            <tr><td>Habitação</td><td>${dados.articulacao_habitacao === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_habitacao === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_habitacao || ''}</td></tr>
+                            <tr><td>Trabalho e Renda</td><td>${dados.articulacao_trabalho === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_trabalho === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_trabalho || ''}</td></tr>
+                            <tr><td>Sistema de Justiça</td><td>${dados.articulacao_justica === 'sim' ? '☑' : '☐'}</td><td>${dados.articulacao_justica === 'nao' ? '☑' : '☐'}</td><td>${dados.obs_justica || ''}</td></tr>
+                        </table>
+                        
+                        <h4>2.14. A forma de execução (metodologia) das ações atende às diretrizes das regulamentações?</h4>
+                        <p>${dados.metodologia_adequada === 'sim' ? '☑ sim ☐ não' : '☐ sim ☑ não'}</p>
+                        ${dados.obs_metodologia ? `<p><strong>Observações:</strong> ${dados.obs_metodologia}</p>` : ''}
+                        
+                        ${secaoFotos}
+                        
+                        <h3>3. DO VOTO</h3>
+                        <p><strong>3.1. Quanto às análises técnicas elaboradas pela Secretaria Executiva, o Relator:</strong></p>
+                        <p>${dados.concordancia_analises === 'concorda' ? '☑ concorda ☐ discorda' : '☐ concorda ☑ discorda'}</p>
+                        ${dados.fundamentos_discordancia ? `<p><strong>Fundamentos:</strong> ${dados.fundamentos_discordancia}</p>` : ''}
+                        
+                        <p><strong>3.2. O(A) Conselheiro(a) vota pelo(a):</strong></p>
+                        <p>${dados.voto_final === 'Indeferimento do pedido quanto à oferta analisada' ? '☑' : '☐'} Indeferimento do pedido quanto à oferta analisada</p>
+                        <p>${dados.voto_final === 'Deferimento do pedido quanto à oferta analisada' ? '☑' : '☐'} Deferimento do pedido quanto à oferta analisada</p>
+                        <p>${dados.voto_final === 'Manutenção da inscrição quanto à oferta analisada' ? '☑' : '☐'} Manutenção da inscrição quanto à oferta analisada</p>
+                        <p>${dados.voto_final === 'Cancelamento da inscrição quanto à oferta analisada' ? '☑' : '☐'} Cancelamento da inscrição quanto à oferta analisada</p>
+                        
+                        <div style="margin-top: 40px; padding: 20px; border: 2px solid #48bb78; border-radius: 10px; background: #f0fff4;">
+                            <h4 style="color: #38a169;">✅ DOCUMENTO OFICIAL CAS-DF</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 12px; margin: 15px 0;">
+                                <p><strong>Número do Documento:</strong> ${numeroDocumento}</p>
+                                <p><strong>Data/Hora de Assinatura:</strong> ${document.getElementById('signatureDateTime')?.textContent || 'N/A'}</p>
+                                <p><strong>Conselheiro Responsável:</strong> ${dados.nome_conselheiro}</p>
+                                <p><strong>CPF:</strong> ${dados.cpf_conselheiro}</p>
+                                <p><strong>Entidade Fiscalizada:</strong> ${dados.nome_entidade}</p>
+                                <p><strong>CNPJ:</strong> ${dados.cnpj_entidade}</p>
+                            </div>
+                            <p style="font-size: 11px; margin: 10px 0;"><strong>Hash de Verificação:</strong> ${hashDocumento}</p>
+                            <p style="font-size: 10px; color: #666; margin: 10px 0; text-align: center;">
+                                Este documento foi assinado digitalmente e possui validade legal conforme MP 2.200-2/2001
+                            </p>
+                        </div>
+                        
+                        <div style="margin-top: 40px;">
+                            <p><strong>Seja o presente voto submetido à deliberação da plenária.</strong></p>
+                            <p style="margin-top: 30px;">${dados.data_voto ? new Date(dados.data_voto).toLocaleDateString('pt-BR') : '____'}</p>
+                            <div style="margin-top: 50px; border-top: 1px solid black; width: 300px; text-align: center;">
+                                <p>${dados.nome_conselheiro}</p>
+                                <p>Conselheiro(a)</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const reportContentEl = document.getElementById('reportContent');
+                const reportSectionEl = document.getElementById('reportSection');
+                const formEl = document.getElementById('fiscalizacaoForm');
+
+                if (reportContentEl) reportContentEl.innerHTML = relatorio;
+                if (reportSectionEl) reportSectionEl.style.display = 'block';
+                if (formEl) formEl.style.display = 'none';
+                
+                // Scroll para o topo do relatório
+                if (reportSectionEl) {
+                    reportSectionEl.scrollIntoView({ behavior: 'smooth' });
+                }
+
+                mostrarNotificacao('Relatório gerado com sucesso!' + (totalFotos > 0 ? ` (${totalFotos} fotos incluídas)` : ''), 'success');
+            } catch (error) {
+                console.error('Erro ao gerar relatório:', error);
+                mostrarNotificacao('Erro ao gerar relatório. Tente novamente.', 'error');
+            }
+        }
+
+        console.log('💡 Execute verificarSistema() para fazer uma verificação completa');
+        console.log('📸 Módulo de fotos carregado! Use as funções de captura na seção 2.15');<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -308,8 +501,31 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .form-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
             .form-row, .form-row-3 {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
             
             .checkbox-grid {
@@ -319,24 +535,263 @@
             .action-buttons {
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
             }
 
             .btn {
                 width: 100%;
                 max-width: 300px;
+                padding: 12px 20px;
+                font-size: 14px;
             }
 
             .articulacao-grid {
                 grid-template-columns: 1fr;
-                text-align: center;
+                text-align: left;
+                gap: 5px;
+            }
+            
+            .articulacao-grid > div:first-child {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            
+            .form-table {
+                font-size: 12px;
+            }
+            
+            .form-table th,
+            .form-table td {
+                padding: 6px 4px;
+            }
+            
+            .endereco-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .endereco-item input[type="text"] {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .endereco-item label {
+                margin: 2px 0;
+            }
+            
+            /* Melhor formatação da seção de serviços em mobile */
+            .form-section div[style*="border: 2px solid #333"] {
+                padding: 10px !important;
+            }
+            
+            .form-section div[style*="display: grid; grid-template-columns: 1fr 1fr"] {
+                display: block !important;
+                border-bottom: 1px solid #333;
+                padding: 10px 0;
+            }
+            
+            .form-section div[style*="border-right: 1px solid #333"] {
+                border-right: none !important;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 15px;
+                max-height: 90vh;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                top: 10px;
+                transform: translateY(-100%);
+                transition: all 0.3s ease;
+            }
+            
+            .notification.show {
+                transform: translateY(0);
+            }
+            
+            /* Melhor visualização dos checkboxes em mobile */
+            input[type="checkbox"], input[type="radio"] {
+                transform: scale(1.5);
+                margin-right: 12px;
+            }
+            
+            label {
+                line-height: 1.6;
+                padding: 5px 0;
+            }
+            
+            /* Assinatura digital responsiva */
+            div[style*="background: white; padding: 25px"] {
+                padding: 15px !important;
+            }
+            
+            .form-group input, .form-group textarea, .form-group select {
+                font-size: 16px; /* Evita zoom no iOS */
             }
         }
 
-        @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border-radius: 0; }
-            .action-buttons, .btn { display: none !important; }
-            .form-section { break-inside: avoid; page-break-inside: avoid; }
+        /* === ESTILOS PARA MÓDULO DE FOTOS (NOVO) === */
+        .categoria-fotos {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e8f5e8;
+            border-radius: 8px;
+            background: #fafffe;
+        }
+
+        .fotos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+            min-height: 40px;
+            border: 2px dashed #c8e6c9;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .fotos-grid:empty::before {
+            content: "📷 Nenhuma foto adicionada";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #81c784;
+            font-size: 14px;
+            height: 40px;
+        }
+
+        .foto-item {
+            position: relative;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .foto-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .foto-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .foto-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 12px;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .foto-item:hover .foto-overlay {
+            opacity: 1;
+        }
+
+        .foto-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 3px;
+        }
+
+        .foto-btn {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .foto-btn:hover {
+            background: rgba(244, 67, 54, 0.9);
+        }
+
+        .btn-mini {
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-mini:hover {
+            background: #45a049;
+        }
+
+        .foto-contador {
+            background: #e8f5e8;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        /* Responsivo para fotos */
+        @media (max-width: 768px) {
+            .fotos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .categoria-fotos {
+                padding: 10px;
+                margin: 15px 0;
+            }
+
+            .foto-overlay {
+                font-size: 10px;
+                padding: 3px;
+            }
+
+            div[style*="display: flex; gap: 10px"] {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            div[style*="display: flex; gap: 10px"] button {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            #contador-fotos {
+                align-self: center !important;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -766,9 +1221,22 @@
                         </div>
                     </div>
 
-                    <!-- 2.12. Articulação com a rede -->
+                    <!-- 2.12. Correspondência das ações -->
                     <div class="form-group">
-                        <label>2.12. Articulação com a rede setorial SUAS e outras redes:</label>
+                        <label>2.12. As ações efetivamente executadas correspondem à oferta para a qual possui inscrição?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="acoes_correspondem" value="sim"> sim</label>
+                            <label><input type="radio" name="acoes_correspondem" value="nao"> não</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="obs_acoes_correspondem">Observações:</label>
+                            <textarea id="obs_acoes_correspondem" name="obs_acoes_correspondem" rows="8"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 2.13. Articulação com a rede -->
+                    <div class="form-group">
+                        <label>2.13. Articulação com a rede setorial SUAS e outras redes:</label>
                         
                         <div style="margin: 20px 0;">
                             <div class="articulacao-grid articulacao-header">
@@ -829,19 +1297,6 @@
                         </div>
                     </div>
 
-                    <!-- 2.13. Correspondência das ações -->
-                    <div class="form-group">
-                        <label>2.13. As ações efetivamente executadas correspondem à oferta para a qual possui inscrição?</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="acoes_correspondem" value="sim"> sim</label>
-                            <label><input type="radio" name="acoes_correspondem" value="nao"> não</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="obs_acoes_correspondem">Observações:</label>
-                            <textarea id="obs_acoes_correspondem" name="obs_acoes_correspondem" rows="8"></textarea>
-                        </div>
-                    </div>
-
                     <!-- 2.14. Metodologia -->
                     <div class="form-group">
                         <label>2.14. A forma de execução (metodologia) das ações atende às diretrizes das regulamentações?</label>
@@ -854,6 +1309,114 @@
                             <textarea id="obs_metodologia" name="obs_metodologia" rows="4"></textarea>
                         </div>
                     </div>
+                </div>
+                <div class="form-section" style="border: 2px solid #4caf50; background: #f8fff8;">
+                    <h3>📸 2.15. DOCUMENTAÇÃO FOTOGRÁFICA</h3>
+                    
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin: 0; font-size: 14px; color: #2e7d32;">
+                            <strong>💡 Nova Funcionalidade:</strong> Adicione fotos para complementar sua fiscalização. 
+                            As imagens serão incluídas no relatório final.
+                        </p>
+                    </div>
+
+                    <!-- Controles de Fotos -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button type="button" onclick="abrirCameraFiscalizacao()" class="btn btn-primary" style="background: #4caf50;">
+                            📷 Tirar Foto
+                        </button>
+                        <button type="button" onclick="selecionarFotosFiscalizacao()" class="btn btn-secondary">
+                            📁 Selecionar Fotos
+                        </button>
+                        <button type="button" onclick="limparTodasFotos()" class="btn btn-danger" style="font-size: 14px;">
+                            🗑️ Limpar Todas
+                        </button>
+                        <span id="contador-fotos" style="align-self: center; font-weight: bold; color: #4caf50;">
+                            📊 0 fotos adicionadas
+                        </span>
+                    </div>
+
+                    <!-- Container de Fotos Organizadas -->
+                    <div id="fotos-fiscalizacao-container">
+                        
+                        <!-- Categoria: Fachada/Externa -->
+                        <div class="categoria-fotos" data-categoria="fachada">
+                            <h4 style="color: #2e7d32; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">
+                                🏢 Fachada/Área Externa
+                            </h4>
+                            <div class="fotos-grid" id="fotos-fachada"></div>
+                            <button type="button" onclick="adicionarFotoCategoria('fachada')" class="btn-mini">+ Adicionar</button>
+                        </div>
+
+                        <!-- Categoria: Internas -->
+                        <div class="categoria-fotos" data-categoria="internas">
+                            <h4 style="color: #2e7d32; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">
+                                🏠 Dependências Internas
+                            </h4>
+                            <div class="fotos-grid" id="fotos-internas"></div>
+                            <button type="button" onclick="adicionarFotoCategoria('internas')" class="btn-mini">+ Adicionar</button>
+                        </div>
+
+                        <!-- Categoria: Documentos -->
+                        <div class="categoria-fotos" data-categoria="documentos">
+                            <h4 style="color: #2e7d32; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">
+                                📋 Documentos/Licenças
+                            </h4>
+                            <div class="fotos-grid" id="fotos-documentos"></div>
+                            <button type="button" onclick="adicionarFotoCategoria('documentos')" class="btn-mini">+ Adicionar</button>
+                        </div>
+
+                        <!-- Categoria: Acessibilidade -->
+                        <div class="categoria-fotos" data-categoria="acessibilidade">
+                            <h4 style="color: #2e7d32; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">
+                                ♿ Acessibilidade
+                            </h4>
+                            <div class="fotos-grid" id="fotos-acessibilidade"></div>
+                            <button type="button" onclick="adicionarFotoCategoria('acessibilidade')" class="btn-mini">+ Adicionar</button>
+                        </div>
+
+                        <!-- Categoria: Observações Gerais -->
+                        <div class="categoria-fotos" data-categoria="observacoes">
+                            <h4 style="color: #2e7d32; border-bottom: 2px solid #4caf50; padding-bottom: 5px;">
+                                👁️ Observações Gerais
+                            </h4>
+                            <div class="fotos-grid" id="fotos-observacoes"></div>
+                            <button type="button" onclick="adicionarFotoCategoria('observacoes')" class="btn-mini">+ Adicionar</button>
+                        </div>
+
+                    </div>
+
+                    <!-- Input hidden para captura de fotos -->
+                    <input type="file" id="foto-input-hidden" accept="image/*" capture="environment" multiple style="display: none;">
+                    
+                    <!-- Modal para descrição da foto -->
+                    <div id="modal-descricao-foto" class="modal" style="display: none;">
+                        <div class="modal-content" style="max-width: 500px;">
+                            <h4>📝 Descrição da Foto</h4>
+                            <div style="text-align: center; margin: 15px 0;">
+                                <img id="preview-foto-descricao" style="max-width: 100%; max-height: 200px; border: 1px solid #ccc;">
+                            </div>
+                            <div class="form-group">
+                                <label for="descricao-foto-input">Descrição (opcional):</label>
+                                <input type="text" id="descricao-foto-input" placeholder="Ex: Entrada principal, Licença de funcionamento, etc." style="width: 100%;">
+                            </div>
+                            <div class="form-group">
+                                <label for="categoria-foto-select">Categoria:</label>
+                                <select id="categoria-foto-select" style="width: 100%;">
+                                    <option value="fachada">🏢 Fachada/Área Externa</option>
+                                    <option value="internas">🏠 Dependências Internas</option>
+                                    <option value="documentos">📋 Documentos/Licenças</option>
+                                    <option value="acessibilidade">♿ Acessibilidade</option>
+                                    <option value="observacoes">👁️ Observações Gerais</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                                <button onclick="salvarFotoComDescricao()" class="btn btn-success">✅ Salvar</button>
+                                <button onclick="cancelarDescricaoFoto()" class="btn btn-secondary">❌ Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- 3. DO VOTO -->
@@ -994,26 +1557,37 @@
 
                 <div class="action-buttons" style="margin-top: 30px;">
                     <button onclick="voltarFormulario()" class="btn btn-secondary">⬅️ Voltar</button>
-                    <button onclick="imprimirRelatorio()" class="btn btn-primary">🖨️ Imprimir PDF</button>
-                    <button onclick="gerarPDF()" class="btn btn-primary">📄 Baixar PDF</button>
-                    <button onclick="enviarEmail()" class="btn btn-success">📧 Enviar Email</button>
-                    <button onclick="salvarRelatorio()" class="btn btn-secondary">💾 Backup HTML</button>
+                    <button onclick="gerarPDFParaEmail()" class="btn btn-primary">📄 Baixar PDF</button>
+                    <button onclick="enviarEmailDireto()" class="btn btn-success">📧 Enviar para CAS-DF</button>
+                    <button onclick="enviarEmail()" class="btn btn-success">📧 Email Personalizado</button>
+                    <button onclick="enviarPorWhatsApp()" class="btn btn-success">📱 WhatsApp</button>
                     <button onclick="verificarDocumento()" class="btn btn-secondary">🔍 Verificar Hash</button>
+                    <button onclick="salvarRelatorio()" class="btn btn-secondary">💾 Backup HTML</button>
                 </div>
 
                 <!-- Modal de Email -->
                 <div id="emailModal" class="modal">
-                    <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-content" style="max-width: 700px;">
                         <span class="close" onclick="fecharEmailModal()">&times;</span>
-                        <h3>📧 Enviar Relatório por Email</h3>
+                        <h3>📧 Enviar Relatório para o CAS-DF</h3>
                         
-                        <div class="form-group">
-                            <label for="email_destinatario">Para (destinatário):</label>
-                            <input type="email" id="email_destinatario" value="Cas_df@sedes.df.gov.br" style="width: 100%;">
+                        <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196f3;">
+                            <h4 style="margin: 0 0 10px 0; color: #1976d2;">ℹ️ Instruções para Envio</h4>
+                            <ol style="margin: 0; padding-left: 20px; font-size: 14px;">
+                                <li>Clique em "📧 Abrir no Email" para abrir seu cliente de email</li>
+                                <li>O email será pré-preenchido com os dados do relatório</li>
+                                <li><strong>IMPORTANTE:</strong> Anexe manualmente o arquivo PDF antes de enviar</li>
+                                <li>Use "📄 Baixar PDF" se ainda não baixou o arquivo</li>
+                            </ol>
                         </div>
                         
                         <div class="form-group">
-                            <label for="email_copia">Com cópia (CC):</label>
+                            <label for="email_destinatario">Para (destinatário):</label>
+                            <input type="email" id="email_destinatario" value="Cas_df@sedes.df.gov.br" style="width: 100%;" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email_copia">Com cópia (CC) - Opcional:</label>
                             <input type="email" id="email_copia" placeholder="seu.email@exemplo.com" style="width: 100%;">
                         </div>
                         
@@ -1027,13 +1601,15 @@
                             <textarea id="email_corpo" rows="12" style="width: 100%;" readonly></textarea>
                         </div>
                         
-                        <div style="margin-top: 20px; padding: 15px; background: #e6fffa; border-radius: 5px; border-left: 4px solid #38a169;">
-                            <p style="margin: 0; font-size: 14px;"><strong>📎 Anexo:</strong> O relatório em PDF será anexado automaticamente</p>
-                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Documento: <span id="nome_arquivo_email"></span></p>
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3e0; border-radius: 5px; border-left: 4px solid #ff9800;">
+                            <p style="margin: 0; font-size: 14px;"><strong>📎 Anexo Obrigatório:</strong></p>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Arquivo: <span id="nome_arquivo_email"></span></p>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><strong>⚠️ Lembre-se de anexar o PDF antes de enviar o email!</strong></p>
                         </div>
                         
-                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
-                            <button onclick="abrirClienteEmail()" class="btn btn-primary">📧 Abrir no Email</button>
+                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px; flex-wrap: wrap;">
+                            <button onclick="gerarPDFParaEmail()" class="btn btn-primary">📄 Baixar PDF</button>
+                            <button onclick="abrirClienteEmail()" class="btn btn-success">📧 Abrir no Email</button>
                             <button onclick="copiarTextoEmail()" class="btn btn-secondary">📋 Copiar Texto</button>
                             <button onclick="fecharEmailModal()" class="btn btn-secondary">❌ Cancelar</button>
                         </div>
@@ -1635,7 +2211,7 @@
             }
         }
 
-        // Funções simplificadas
+        // Funções de rascunho ATUALIZADAS (com fotos)
         function salvarRascunho() {
             try {
                 const form = document.getElementById('fiscalizacaoForm');
@@ -1648,10 +2224,15 @@
                     .map(cb => cb.value);
                 dados.tipoServico = servicosSelecionados;
                 
+                // NOVO: Incluir fotos no rascunho
+                const totalFotos = Object.values(fotosFiscalizacao).reduce((acc, arr) => acc + arr.length, 0);
+                dados.fotos = fotosFiscalizacao;
+                dados.totalFotos = totalFotos;
+                
                 localStorage.setItem('cas_rascunho', JSON.stringify(dados));
                 localStorage.setItem('cas_rascunho_data', new Date().toISOString());
                 
-                mostrarNotificacao('Rascunho salvo com sucesso!', 'success');
+                mostrarNotificacao(`Rascunho salvo com sucesso! ${totalFotos > 0 ? `(${totalFotos} fotos incluídas)` : ''}`, 'success');
             } catch (error) {
                 console.error('Erro ao salvar rascunho:', error);
                 mostrarNotificacao('Erro ao salvar rascunho.', 'error');
@@ -1669,8 +2250,10 @@
 
                 const dados = JSON.parse(rascunho);
                 
+                // Carregar dados do formulário (função original)
                 Object.keys(dados).forEach(key => {
-                    if (Array.isArray(dados[key])) return;
+                    if (Array.isArray(dados[key]) && key !== 'tipoServico' && key !== 'fotos') return;
+                    if (key === 'fotos' || key === 'totalFotos') return; // Pular dados de fotos por enquanto
                     
                     const elemento = document.querySelector(`[name="${key}"]`);
                     if (elemento) {
@@ -1685,6 +2268,7 @@
                     }
                 });
 
+                // Carregar serviços selecionados
                 if (dados.tipoServico && Array.isArray(dados.tipoServico)) {
                     dados.tipoServico.forEach(valor => {
                         const checkbox = document.querySelector(`[name="tipoServico"][value="${valor}"]`);
@@ -1692,10 +2276,28 @@
                     });
                 }
 
+                // NOVO: Carregar fotos do rascunho
+                if (dados.fotos) {
+                    fotosFiscalizacao = dados.fotos;
+                    
+                    // Renderizar fotos na interface
+                    Object.keys(fotosFiscalizacao).forEach(categoria => {
+                        const grid = document.getElementById(`fotos-${categoria}`);
+                        if (grid) grid.innerHTML = ''; // Limpar antes
+                        
+                        fotosFiscalizacao[categoria].forEach(foto => {
+                            renderizarFotoNaCategoria(foto, categoria);
+                        });
+                    });
+                    
+                    atualizarContadorFotos();
+                }
+
                 const dataRascunho = localStorage.getItem('cas_rascunho_data');
                 const dataFormatada = new Date(dataRascunho).toLocaleString();
                 
-                mostrarNotificacao(`Rascunho carregado! (salvo em ${dataFormatada})`, 'info');
+                const totalFotos = dados.totalFotos || 0;
+                mostrarNotificacao(`Rascunho carregado! (salvo em ${dataFormatada})${totalFotos > 0 ? ` - ${totalFotos} fotos restauradas` : ''}`, 'info');
             } catch (error) {
                 console.error('Erro ao carregar rascunho:', error);
                 mostrarNotificacao('Erro ao carregar rascunho', 'error');
@@ -1704,12 +2306,20 @@
 
         function limparFormulario() {
             try {
-                if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                if (confirm('Tem certeza que deseja limpar todos os dados E FOTOS?')) {
                     const form = document.getElementById('fiscalizacaoForm');
                     if (form) form.reset();
                     
                     assinaturaValida = false;
                     hashDocumento = '';
+                    
+                    // NOVO: Limpar fotos também
+                    Object.keys(fotosFiscalizacao).forEach(categoria => {
+                        fotosFiscalizacao[categoria] = [];
+                        const grid = document.getElementById(`fotos-${categoria}`);
+                        if (grid) grid.innerHTML = '';
+                    });
+                    atualizarContadorFotos();
                     
                     const signatureInfo = document.getElementById('signatureInfo');
                     const cpfEl = document.getElementById('cpf_conselheiro');
@@ -1726,7 +2336,7 @@
                     
                     verificarLiberacaoRelatorio();
                     
-                    mostrarNotificacao('Formulário limpo com sucesso!', 'info');
+                    mostrarNotificacao('Formulário e fotos limpos com sucesso!', 'info');
                 }
             } catch (error) {
                 console.error('Erro ao limpar formulário:', error);
@@ -1833,14 +2443,1083 @@
             }
         }
 
-        // Funções de modal simplificadas
-        function enviarEmail() { mostrarNotificacao('📧 Funcionalidade em desenvolvimento', 'info'); }
-        function verificarDocumento() { mostrarNotificacao('🔍 Funcionalidade em desenvolvimento', 'info'); }
-        function fecharEmailModal() { const modal = document.getElementById('emailModal'); if (modal) modal.style.display = 'none'; }
-        function fecharVerificacaoModal() { const modal = document.getElementById('verificacaoModal'); if (modal) modal.style.display = 'none'; }
-        function salvarRelatorio() { mostrarNotificacao('💾 Funcionalidade em desenvolvimento', 'info'); }
-        function abrirClienteEmail() { mostrarNotificacao('📧 Funcionalidade em desenvolvimento', 'info'); }
-        function copiarTextoEmail() { mostrarNotificacao('📋 Funcionalidade em desenvolvimento', 'info'); }
+        // Função completa de envio de email com PDF
+        function enviarEmail() {
+            try {
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    mostrarNotificacao('❌ Gere o relatório primeiro antes de enviar por email', 'error');
+                    return;
+                }
+                
+                // Preparar dados do email
+                const assunto = `Relatório de Fiscalização CAS-DF - ${dadosRelatorio.numeroDocumento}`;
+                const nomeArquivo = `Relatorio_CAS_${dadosRelatorio.numeroDocumento.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                
+                const corpoEmail = `Prezados,
+
+Segue em anexo o Relatório de Fiscalização do Conselho de Assistência Social do Distrito Federal (CAS-DF).
+
+DADOS DO DOCUMENTO:
+• Número: ${dadosRelatorio.numeroDocumento}
+• Entidade Fiscalizada: ${dadosRelatorio.entidade}
+• CNPJ: ${dadosRelatorio.cnpj}
+• Conselheiro Responsável: ${dadosRelatorio.conselheiro}
+• Data/Hora de Assinatura: ${dadosRelatorio.timestamp}
+
+VERIFICAÇÃO DE AUTENTICIDADE:
+• Hash de Verificação: ${dadosRelatorio.hash}
+• Este documento foi assinado digitalmente e possui validade legal conforme MP 2.200-2/2001
+
+O relatório completo está em anexo no formato PDF.
+
+Atenciosamente,
+${dadosRelatorio.conselheiro}
+Conselheiro(a) do CAS-DF
+
+---
+CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL
+SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF
+CEP 70.770-502 | E-mail: Cas_df@sedes.df.gov.br`;
+                
+                // Preencher modal com destinatário padrão CAS-DF
+                document.getElementById('email_destinatario').value = 'Cas_df@sedes.df.gov.br';
+                document.getElementById('email_assunto').value = assunto;
+                document.getElementById('email_corpo').value = corpoEmail;
+                document.getElementById('nome_arquivo_email').textContent = nomeArquivo;
+                
+                // Mostrar modal
+                document.getElementById('emailModal').style.display = 'block';
+                
+                mostrarNotificacao('📧 Pronto para enviar para o CAS-DF!', 'success');
+            } catch (error) {
+                console.error('Erro ao preparar email:', error);
+                mostrarNotificacao('❌ Erro ao preparar email', 'error');
+            }
+        }
+        
+        function abrirClienteEmail() {
+            try {
+                const destinatario = document.getElementById('email_destinatario').value;
+                const copia = document.getElementById('email_copia').value;
+                const assunto = document.getElementById('email_assunto').value;
+                const corpo = document.getElementById('email_corpo').value;
+                
+                if (!destinatario) {
+                    mostrarNotificacao('❌ Destinatário não pode estar vazio', 'error');
+                    return;
+                }
+                
+                // Construir URL mailto
+                let mailtoUrl = `mailto:${destinatario}`;
+                const params = [];
+                
+                if (copia) params.push(`cc=${encodeURIComponent(copia)}`);
+                if (assunto) params.push(`subject=${encodeURIComponent(assunto)}`);
+                if (corpo) params.push(`body=${encodeURIComponent(corpo)}`);
+                
+                if (params.length > 0) {
+                    mailtoUrl += '?' + params.join('&');
+                }
+                
+                // Abrir cliente de email
+                window.location.href = mailtoUrl;
+                
+                mostrarNotificacao('📧 Cliente de email aberto! IMPORTANTE: Anexe manualmente o PDF antes de enviar.', 'info', 8000);
+                fecharEmailModal();
+                
+                // Oferecer download automático do PDF
+                setTimeout(() => {
+                    if (confirm('Deseja baixar o PDF agora para anexar ao email?')) {
+                        gerarPDF();
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Erro ao abrir cliente de email:', error);
+                mostrarNotificacao('❌ Erro ao abrir cliente de email', 'error');
+            }
+        }
+        
+        function enviarEmailDireto() {
+            try {
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    mostrarNotificacao('❌ Gere o relatório primeiro', 'error');
+                    return;
+                }
+                
+                // Preparar dados para envio direto
+                const assunto = `Relatório de Fiscalização CAS-DF - ${dadosRelatorio.numeroDocumento}`;
+                const corpo = `Relatório de Fiscalização enviado automaticamente.
+                
+Documento: ${dadosRelatorio.numeroDocumento}
+Entidade: ${dadosRelatorio.entidade}
+Conselheiro: ${dadosRelatorio.conselheiro}
+Data: ${dadosRelatorio.timestamp}
+Hash: ${dadosRelatorio.hash}`;
+                
+                // Construir mailto com dados do CAS-DF
+                const mailtoUrl = `mailto:Cas_df@sedes.df.gov.br?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+                
+                // Abrir cliente de email
+                window.location.href = mailtoUrl;
+                
+                // Baixar PDF automaticamente
+                setTimeout(() => {
+                    gerarPDF();
+                    mostrarNotificacao('📧 Email aberto e PDF baixado! Anexe o arquivo ao email.', 'success', 6000);
+                }, 500);
+                
+            } catch (error) {
+                console.error('Erro no envio direto:', error);
+                mostrarNotificacao('❌ Erro no envio de email', 'error');
+            }
+        }
+        
+        // Função melhorada para gerar PDF otimizado para email
+        function gerarPDFParaEmail() {
+            try {
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    mostrarNotificacao('❌ Gere o relatório primeiro', 'error');
+                    return;
+                }
+                
+                const reportContent = document.getElementById('reportContent')?.innerHTML;
+                if (!reportContent) {
+                    mostrarNotificacao('❌ Conteúdo do relatório não encontrado', 'error');
+                    return;
+                }
+                
+                const conteudoPDF = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório CAS-DF - ${dadosRelatorio.numeroDocumento}</title>
+    <style>
+        @page { 
+            margin: 2cm; 
+            size: A4; 
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 10px;
+            }
+        }
+        body { 
+            font-family: 'Times New Roman', serif; 
+            font-size: 12px; 
+            line-height: 1.4; 
+            color: #000; 
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .header-oficial { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 15px; 
+        }
+        .header-oficial h1 { 
+            font-size: 16px; 
+            margin: 10px 0; 
+            font-weight: bold;
+        }
+        .header-oficial h2 { 
+            font-size: 14px; 
+            margin: 10px 0; 
+            font-weight: bold;
+        }
+        .header-oficial p { 
+            font-size: 11px; 
+            margin: 5px 0; 
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 10px 0; 
+            page-break-inside: avoid;
+        }
+        th, td { 
+            border: 1px solid #000; 
+            padding: 6px; 
+            text-align: left; 
+            font-size: 11px;
+            vertical-align: top;
+        }
+        th { 
+            background-color: #f0f0f0; 
+            font-weight: bold; 
+        }
+        h3, h4 { 
+            color: #000; 
+            margin-top: 20px; 
+            margin-bottom: 10px; 
+            page-break-after: avoid;
+            font-weight: bold;
+        }
+        h3 { font-size: 14px; }
+        h4 { font-size: 13px; }
+        p { 
+            margin: 8px 0; 
+            text-align: justify;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .assinatura-digital {
+            margin-top: 30px;
+            padding: 15px;
+            border: 2px solid #2d5a27;
+            border-radius: 5px;
+            background: #f8fff8;
+            page-break-inside: avoid;
+        }
+        .assinatura-digital h4 {
+            color: #2d5a27;
+            margin-bottom: 10px;
+        }
+        .dados-assinatura {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 11px;
+        }
+        .hash-verificacao {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 5px;
+            border: 1px solid #ccc;
+            word-break: break-all;
+            font-size: 10px;
+        }
+        .footer-legal {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+        }
+        @media print {
+            body { print-color-adjust: exact; }
+            .assinatura-digital { background: #f8fff8 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-oficial">
+        <h1>CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h1>
+        <p><strong>SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF - CEP 70.770-502</strong></p>
+        <p><strong>E-mail: Cas_df@sedes.df.gov.br</strong></p>
+        <h2>FICHA DE RELATO DE FISCALIZAÇÃO</h2>
+        <p><strong>Documento Nº: ${dadosRelatorio.numeroDocumento}</strong></p>
+        <p><strong>Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</strong></p>
+    </div>
+    
+    ${reportContent}
+    
+    <div class="assinatura-digital">
+        <h4>✅ DOCUMENTO OFICIAL CAS-DF - ASSINADO DIGITALMENTE</h4>
+        <div class="dados-assinatura">
+            <p><strong>Número do Documento:</strong> ${dadosRelatorio.numeroDocumento}</p>
+            <p><strong>Data/Hora de Assinatura:</strong> ${dadosRelatorio.timestamp}</p>
+            <p><strong>Conselheiro Responsável:</strong> ${dadosRelatorio.conselheiro}</p>
+            <p><strong>CPF:</strong> ${dadosRelatorio.cpf}</p>
+            <p><strong>Entidade Fiscalizada:</strong> ${dadosRelatorio.entidade}</p>
+            <p><strong>CNPJ:</strong> ${dadosRelatorio.cnpj}</p>
+        </div>
+        <p style="margin: 15px 0 5px 0;"><strong>Hash de Verificação:</strong></p>
+        <div class="hash-verificacao">${dadosRelatorio.hash}</div>
+        <div class="footer-legal">
+            Este documento foi assinado digitalmente e possui validade legal conforme MP 2.200-2/2001.<br>
+            Para verificar a autenticidade, utilize o hash de verificação informado acima.
+        </div>
+    </div>
+</body>
+</html>`;
+                
+                const janelaImpressao = window.open('', '_blank', 'width=800,height=600');
+                if (janelaImpressao) {
+                    janelaImpressao.document.write(conteudoPDF);
+                    janelaImpressao.document.close();
+                    
+                    // Aguardar carregar e abrir dialog de impressão
+                    setTimeout(() => {
+                        janelaImpressao.focus();
+                        janelaImpressao.print();
+                    }, 1000);
+                }
+                
+                mostrarNotificacao('📄 PDF otimizado gerado! Use Ctrl+P → "Salvar como PDF" para baixar.', 'success', 6000);
+                
+            } catch (error) {
+                console.error('Erro ao gerar PDF para email:', error);
+                mostrarNotificacao('❌ Erro ao gerar PDF', 'error');
+            }
+        }
+        
+        function copiarTextoEmail() {
+            try {
+                const destinatario = document.getElementById('email_destinatario').value;
+                const copia = document.getElementById('email_copia').value;
+                const assunto = document.getElementById('email_assunto').value;
+                const corpo = document.getElementById('email_corpo').value;
+                
+                const textoCompleto = `
+PARA: ${destinatario}
+${copia ? `CC: ${copia}` : ''}
+ASSUNTO: ${assunto}
+
+${corpo}
+                `.trim();
+                
+                // Copiar para clipboard
+                navigator.clipboard.writeText(textoCompleto).then(() => {
+                    mostrarNotificacao('📋 Texto do email copiado! Cole no seu cliente de email.', 'success');
+                }).catch(() => {
+                    // Fallback para navegadores mais antigos
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textoCompleto;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    mostrarNotificacao('📋 Texto copiado! Cole no seu cliente de email.', 'success');
+                });
+                
+            } catch (error) {
+                console.error('Erro ao copiar texto:', error);
+                mostrarNotificacao('❌ Erro ao copiar texto', 'error');
+            }
+        }
+        
+        function verificarDocumento() {
+            try {
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    mostrarNotificacao('❌ Gere o relatório primeiro para verificar', 'error');
+                    return;
+                }
+                
+                // Preencher dados do modal de verificação
+                document.getElementById('numero_documento_verify').textContent = dadosRelatorio.numeroDocumento;
+                document.getElementById('hash_documento_verify').textContent = dadosRelatorio.hash;
+                document.getElementById('timestamp_verify').textContent = dadosRelatorio.timestamp;
+                document.getElementById('conselheiro_verify').textContent = dadosRelatorio.conselheiro;
+                document.getElementById('cpf_verify').textContent = dadosRelatorio.cpf;
+                
+                // Gerar QR Code simples (texto)
+                const qrData = `CAS-DF|${dadosRelatorio.numeroDocumento}|${dadosRelatorio.hash}|${dadosRelatorio.timestamp}`;
+                document.getElementById('qrcode').innerHTML = `
+                    <div style="font-family: monospace; font-size: 10px; word-break: break-all; max-width: 200px; padding: 10px; border: 1px solid #ccc;">
+                        ${qrData}
+                    </div>
+                    <p style="font-size: 12px; margin-top: 10px;">Código de verificação QR</p>
+                `;
+                
+                // Mostrar modal
+                document.getElementById('verificacaoModal').style.display = 'block';
+                
+                mostrarNotificacao('🔍 Dados de verificação exibidos!', 'success');
+            } catch (error) {
+                console.error('Erro ao verificar documento:', error);
+                mostrarNotificacao('❌ Erro ao verificar documento', 'error');
+            }
+        }
+        
+        function fecharEmailModal() { 
+            const modal = document.getElementById('emailModal'); 
+            if (modal) modal.style.display = 'none'; 
+        }
+        
+        function fecharVerificacaoModal() { 
+            const modal = document.getElementById('verificacaoModal'); 
+            if (modal) modal.style.display = 'none'; 
+        }
+        
+        // Sistema de teste e debug
+        function testarFuncionalidades() {
+            console.log('🧪 Iniciando testes das funcionalidades...');
+            
+            // Teste 1: Verificar elementos DOM essenciais
+            const elementosEssenciais = [
+                'fiscalizacaoForm',
+                'btnRelatorio',
+                'reportSection',
+                'reportContent',
+                'emailModal',
+                'verificacaoModal',
+                'notification'
+            ];
+            
+            elementosEssenciais.forEach(id => {
+                const elemento = document.getElementById(id);
+                console.log(`${elemento ? '✅' : '❌'} ${id}: ${elemento ? 'Encontrado' : 'NÃO ENCONTRADO'}`);
+            });
+            
+            // Teste 2: Verificar variáveis globais
+            console.log('📊 Variáveis globais:');
+            console.log(`- assinaturaValida: ${assinaturaValida}`);
+            console.log(`- hashDocumento: ${hashDocumento || 'vazio'}`);
+            console.log(`- numeroDocumento: ${numeroDocumento || 'vazio'}`);
+            console.log(`- dadosRelatorio:`, dadosRelatorio);
+            
+            // Teste 3: Verificar localStorage
+            console.log('💾 localStorage:');
+            console.log(`- Contador: ${localStorage.getItem('cas_contador_documentos') || 'vazio'}`);
+            console.log(`- Rascunho: ${localStorage.getItem('cas_rascunho') ? 'existe' : 'vazio'}`);
+            
+            mostrarNotificacao('🧪 Teste completo! Verifique o console (F12)', 'info');
+        }
+
+        // Função de diagnóstico melhorada
+        function diagnosticoSistema() {
+            try {
+                console.log('🔍 === DIAGNÓSTICO DO SISTEMA ===');
+                
+                // 1. Testar geração de número do documento
+                console.log('1. Testando geração de número...');
+                const numeroTeste = gerarNumeroDocumento();
+                console.log(`✅ Número gerado: ${numeroDocumento}`);
+                
+                // 2. Testar validações
+                console.log('2. Testando validações...');
+                console.log(`CPF 12345678901: ${validarCPF('12345678901') ? '❌ Válido (erro!)' : '✅ Inválido (correto)'}`);
+                console.log(`CPF 11144477735: ${validarCPF('11144477735') ? '✅ Válido' : '❌ Inválido'}`);
+                console.log(`CNPJ 11444777000161: ${validarCNPJ('11444777000161') ? '✅ Válido' : '❌ Inválido'}`);
+                
+                // 3. Testar notificações
+                console.log('3. Testando notificações...');
+                setTimeout(() => mostrarNotificacao('✅ Teste Success', 'success'), 1000);
+                setTimeout(() => mostrarNotificacao('❌ Teste Error', 'error'), 2000);
+                setTimeout(() => mostrarNotificacao('ℹ️ Teste Info', 'info'), 3000);
+                
+                // 4. Verificar elementos do formulário
+                console.log('4. Verificando formulário...');
+                const form = document.getElementById('fiscalizacaoForm');
+                if (form) {
+                    const inputs = form.querySelectorAll('input, select, textarea');
+                    console.log(`✅ Formulário encontrado com ${inputs.length} campos`);
+                } else {
+                    console.log('❌ Formulário não encontrado');
+                }
+                
+                // 5. Testar máscaras
+                console.log('5. Testando máscaras...');
+                const cpfInput = document.getElementById('cpf_conselheiro');
+                const cnpjInput = document.getElementById('cnpj_entidade');
+                console.log(`CPF input: ${cpfInput ? '✅' : '❌'}`);
+                console.log(`CNPJ input: ${cnpjInput ? '✅' : '❌'}`);
+                
+                mostrarNotificacao('🔍 Diagnóstico completo! Verifique o console', 'info');
+                
+            } catch (error) {
+                console.error('❌ Erro no diagnóstico:', error);
+                mostrarNotificacao('❌ Erro no diagnóstico', 'error');
+            }
+        }
+
+        // Teste específico para email
+        function testarEmail() {
+            try {
+                console.log('📧 === TESTE DE EMAIL ===');
+                
+                // Simular dados do relatório para teste
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    dadosRelatorio = {
+                        numeroDocumento: 'CAS-DF-2025-TESTE',
+                        conselheiro: 'Teste Conselheiro',
+                        cpf: '111.444.777-35',
+                        entidade: 'Entidade Teste',
+                        cnpj: '11.444.777/0001-61',
+                        timestamp: new Date().toLocaleString('pt-BR'),
+                        hash: 'TESTE123456789'
+                    };
+                    console.log('✅ Dados de teste criados');
+                }
+                
+                // Testar preparação do email
+                const modal = document.getElementById('emailModal');
+                if (modal) {
+                    enviarEmail();
+                    console.log('✅ Função enviarEmail() executada');
+                } else {
+                    console.log('❌ Modal de email não encontrado');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no teste de email:', error);
+                mostrarNotificacao('❌ Erro no teste de email', 'error');
+            }
+        }
+
+        // Teste de responsividade
+        function testarResponsividade() {
+            try {
+                console.log('📱 === TESTE DE RESPONSIVIDADE ===');
+                
+                const largura = window.innerWidth;
+                console.log(`Largura atual: ${largura}px`);
+                
+                if (largura <= 768) {
+                    console.log('✅ Modo mobile detectado');
+                    mostrarNotificacao('📱 Modo mobile ativo', 'info');
+                } else {
+                    console.log('✅ Modo desktop detectado');
+                    mostrarNotificacao('🖥️ Modo desktop ativo', 'info');
+                }
+                
+                // Testar elementos responsivos
+                const botoes = document.querySelectorAll('.btn');
+                console.log(`Botões encontrados: ${botoes.length}`);
+                
+                const formulario = document.querySelector('.form-section');
+                if (formulario) {
+                    console.log('✅ Seção de formulário encontrada');
+                } else {
+                    console.log('❌ Seção de formulário não encontrada');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro no teste de responsividade:', error);
+            }
+        }
+
+        // Adicionar botões de teste (apenas para desenvolvimento)
+        function adicionarBotoesTeste() {
+            const botoesExistentes = document.querySelector('.action-buttons');
+            if (botoesExistentes && !document.getElementById('botoes-teste')) {
+                const divTeste = document.createElement('div');
+                divTeste.id = 'botoes-teste';
+                divTeste.style.cssText = 'margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px;';
+                divTeste.innerHTML = `
+                    <h4 style="margin: 0 0 10px 0; color: #856404;">🧪 Testes de Desenvolvimento</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="diagnosticoSistema()" class="btn btn-secondary" style="font-size: 12px; padding: 8px 15px;">🔍 Diagnóstico</button>
+                        <button onclick="testarFuncionalidades()" class="btn btn-secondary" style="font-size: 12px; padding: 8px 15px;">🧪 Testar Funções</button>
+                        <button onclick="testarEmail()" class="btn btn-secondary" style="font-size: 12px; padding: 8px 15px;">📧 Testar Email</button>
+                        <button onclick="testarResponsividade()" class="btn btn-secondary" style="font-size: 12px; padding: 8px 15px;">📱 Responsividade</button>
+                        <button onclick="document.getElementById('botoes-teste').remove()" class="btn btn-danger" style="font-size: 12px; padding: 8px 15px;">❌ Remover Testes</button>
+                    </div>
+                `;
+                botoesExistentes.after(divTeste);
+            }
+        }
+
+        // Corrigir função gerarNumeroDocumento para retornar valor
+        function gerarNumeroDocumento() {
+            try {
+                const ano = new Date().getFullYear();
+                const contador = localStorage.getItem('cas_contador_documentos') || '0';
+                const novoContador = String(parseInt(contador) + 1).padStart(4, '0');
+                numeroDocumento = `CAS-DF-${ano}-${novoContador}`;
+                localStorage.setItem('cas_contador_documentos', novoContador);
+                return numeroDocumento;
+            } catch (error) {
+                console.error('Erro ao gerar número do documento:', error);
+                numeroDocumento = `CAS-DF-${new Date().getFullYear()}-${Date.now()}`;
+                return numeroDocumento;
+            }
+        }
+
+        // Melhorar função salvarRelatorio
+        function salvarRelatorio() {
+            try {
+                if (!dadosRelatorio || !dadosRelatorio.numeroDocumento) {
+                    mostrarNotificacao('❌ Gere o relatório primeiro', 'error');
+                    return;
+                }
+                
+                const reportContent = document.getElementById('reportContent')?.innerHTML;
+                if (!reportContent) {
+                    mostrarNotificacao('❌ Conteúdo do relatório não encontrado', 'error');
+                    return;
+                }
+                
+                const htmlCompleto = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório CAS-DF - ${dadosRelatorio.numeroDocumento}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+        th { background-color: #f0f0f0; font-weight: bold; }
+        h3, h4 { color: #2d3748; margin-top: 20px; margin-bottom: 10px; }
+        p { margin: 6px 0; }
+        .header-oficial { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+        @media print { body { margin: 0; } }
+    </style>
+</head>
+<body>
+    <div class="header-oficial">
+        <h1>CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h1>
+        <p>SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF - CEP 70.770-502</p>
+        <p>E-mail: Cas_df@sedes.df.gov.br</p>
+        <h2>FICHA DE RELATO DE FISCALIZAÇÃO</h2>
+        <p><strong>Documento Nº: ${dadosRelatorio.numeroDocumento}</strong></p>
+    </div>
+    ${reportContent}
+</body>
+</html>`;
+                
+                const blob = new Blob([htmlCompleto], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Relatorio_CAS_${dadosRelatorio.numeroDocumento.replace(/[^a-zA-Z0-9]/g, '_')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                mostrarNotificacao('💾 Backup HTML salvo com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao salvar relatório:', error);
+                mostrarNotificacao('❌ Erro ao salvar backup', 'error');
+            }
+        }
+
+        // Adicionar evento para fechar modais ao clicar fora
+        window.addEventListener('click', function(event) {
+            const emailModal = document.getElementById('emailModal');
+            const verificacaoModal = document.getElementById('verificacaoModal');
+            
+            if (event.target === emailModal) {
+                fecharEmailModal();
+            }
+            if (event.target === verificacaoModal) {
+                fecharVerificacaoModal();
+            }
+        });
+
+        // Auto-executar teste inicial após carregamento
+        setTimeout(() => {
+            console.log('🚀 Sistema CAS-DF carregado!');
+            console.log('💡 Execute diagnosticoSistema() no console para verificar o sistema');
+            console.log('💡 Execute adicionarBotoesTeste() para adicionar botões de teste');
+            
+            // Verificação automática básica
+            const erros = [];
+            
+            if (!document.getElementById('fiscalizacaoForm')) erros.push('Formulário principal');
+            if (!document.getElementById('btnRelatorio')) erros.push('Botão de relatório');
+            if (!document.getElementById('emailModal')) erros.push('Modal de email');
+            
+            if (erros.length > 0) {
+                console.warn('⚠️ Elementos não encontrados:', erros.join(', '));
+                mostrarNotificacao('⚠️ Alguns elementos podem não estar funcionando', 'warning');
+            } else {
+                console.log('✅ Todos os elementos essenciais encontrados');
+                mostrarNotificacao('✅ Sistema inicializado com sucesso!', 'success', 3000);
+            }
+        }, 2000);
+
+        // Verificação de funcionalidades ao gerar relatório
+        const originalGerarRelatorio = gerarRelatorio;
+        gerarRelatorio = function() {
+            console.log('📊 Executando geração de relatório...');
+            try {
+                const resultado = originalGerarRelatorio();
+                console.log('✅ Relatório gerado com sucesso');
+                
+                // Verificar se os dados foram salvos corretamente
+                if (dadosRelatorio && dadosRelatorio.numeroDocumento) {
+                    console.log('✅ Dados do relatório salvos:', dadosRelatorio);
+                } else {
+                    console.warn('⚠️ Dados do relatório podem não ter sido salvos corretamente');
+                }
+                
+                return resultado;
+            } catch (error) {
+                console.error('❌ Erro na geração do relatório:', error);
+                throw error;
+            }
+        };
+
+        // Debug de eventos
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('btn')) {
+                console.log(`🔘 Botão clicado: ${event.target.textContent.trim()}`);
+            }
+        });
+
+        // Verificação final do sistema
+        window.verificarSistema = function() {
+            console.log('🔍 === VERIFICAÇÃO FINAL DO SISTEMA ===');
+            
+            const checklist = [
+                { nome: 'Formulário principal', check: () => !!document.getElementById('fiscalizacaoForm') },
+                { nome: 'Máscaras CPF/CNPJ', check: () => {
+                    const cpf = document.getElementById('cpf_conselheiro');
+                    const cnpj = document.getElementById('cnpj_entidade');
+                    return cpf && cnpj;
+                }},
+                { nome: 'Validação CPF', check: () => validarCPF('11144477735') },
+                { nome: 'Validação CNPJ', check: () => validarCNPJ('11444777000161') },
+                { nome: 'Geração de número', check: () => {
+                    const teste = gerarNumeroDocumento();
+                    return teste && teste.includes('CAS-DF');
+                }},
+                { nome: 'Sistema de notificações', check: () => !!document.getElementById('notification') },
+                { nome: 'Modal de email', check: () => !!document.getElementById('emailModal') },
+                { nome: 'Modal de verificação', check: () => !!document.getElementById('verificacaoModal') },
+                { nome: 'Botão de relatório', check: () => !!document.getElementById('btnRelatorio') },
+                { nome: 'Seção de relatório', check: () => !!document.getElementById('reportSection') }
+            ];
+            
+            checklist.forEach(item => {
+                try {
+                    const resultado = item.check();
+                    console.log(`${resultado ? '✅' : '❌'} ${item.nome}: ${resultado ? 'OK' : 'FALHOU'}`);
+                } catch (error) {
+                    console.log(`❌ ${item.nome}: ERRO - ${error.message}`);
+                }
+            });
+            
+            console.log('🔍 Verificação completa!');
+            mostrarNotificacao('🔍 Verificação do sistema completa - veja o console', 'info');
+        };
+
+        // === MÓDULO DE FOTOS PARA FISCALIZAÇÃO (NOVO) ===
+        let fotosFiscalizacao = {
+            fachada: [],
+            internas: [],
+            documentos: [],
+            acessibilidade: [],
+            observacoes: []
+        };
+        let fotoTemporaria = null;
+
+        // Abrir câmera para tirar foto
+        function abrirCameraFiscalizacao() {
+            try {
+                const input = document.getElementById('foto-input-hidden');
+                input.accept = 'image/*';
+                input.capture = 'environment'; // Câmera traseira
+                input.multiple = false; // Uma foto por vez para descrição
+                
+                input.onchange = function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        processarFotoCapturada(e.target.files[0]);
+                    }
+                };
+                
+                input.click();
+                mostrarNotificacao('📷 Câmera ativada! Tire a foto.', 'info');
+            } catch (error) {
+                console.error('Erro ao abrir câmera:', error);
+                mostrarNotificacao('❌ Erro ao abrir câmera', 'error');
+            }
+        }
+
+        // Selecionar fotos existentes
+        function selecionarFotosFiscalizacao() {
+            try {
+                const input = document.getElementById('foto-input-hidden');
+                input.accept = 'image/*';
+                input.capture = ''; // Galeria
+                input.multiple = true; // Múltiplas fotos
+                
+                input.onchange = function(e) {
+                    if (e.target.files && e.target.files.length > 0) {
+                        Array.from(e.target.files).forEach(file => {
+                            processarFotoCapturada(file);
+                        });
+                    }
+                };
+                
+                input.click();
+                mostrarNotificacao('📁 Selecione as fotos da galeria', 'info');
+            } catch (error) {
+                console.error('Erro ao selecionar fotos:', error);
+                mostrarNotificacao('❌ Erro ao selecionar fotos', 'error');
+            }
+        }
+
+        // Processar foto capturada
+        function processarFotoCapturada(file) {
+            try {
+                if (!file.type.startsWith('image/')) {
+                    mostrarNotificacao('❌ Arquivo deve ser uma imagem', 'error');
+                    return;
+                }
+
+                // Verificar tamanho (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    mostrarNotificacao('❌ Imagem muito grande. Máximo 5MB.', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fotoTemporaria = {
+                        dataUrl: e.target.result,
+                        arquivo: file,
+                        timestamp: new Date().toLocaleString('pt-BR'),
+                        tamanho: (file.size / 1024).toFixed(1) + ' KB'
+                    };
+                    
+                    // Mostrar modal para descrição
+                    mostrarModalDescricao();
+                };
+                
+                reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('Erro ao processar foto:', error);
+                mostrarNotificacao('❌ Erro ao processar foto', 'error');
+            }
+        }
+
+        // Mostrar modal para adicionar descrição
+        function mostrarModalDescricao() {
+            try {
+                const modal = document.getElementById('modal-descricao-foto');
+                const preview = document.getElementById('preview-foto-descricao');
+                const descricaoInput = document.getElementById('descricao-foto-input');
+                
+                if (modal && preview && fotoTemporaria) {
+                    preview.src = fotoTemporaria.dataUrl;
+                    descricaoInput.value = '';
+                    modal.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao mostrar modal:', error);
+            }
+        }
+
+        // Salvar foto com descrição
+        function salvarFotoComDescricao() {
+            try {
+                const categoria = document.getElementById('categoria-foto-select').value;
+                const descricao = document.getElementById('descricao-foto-input').value.trim();
+                
+                if (!fotoTemporaria) {
+                    mostrarNotificacao('❌ Nenhuma foto para salvar', 'error');
+                    return;
+                }
+
+                const novaFoto = {
+                    ...fotoTemporaria,
+                    descricao: descricao || 'Sem descrição',
+                    categoria: categoria,
+                    id: Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+                };
+
+                // Adicionar à categoria correspondente
+                fotosFiscalizacao[categoria].push(novaFoto);
+                
+                // Atualizar interface
+                renderizarFotoNaCategoria(novaFoto, categoria);
+                atualizarContadorFotos();
+                
+                // Fechar modal
+                cancelarDescricaoFoto();
+                
+                mostrarNotificacao(`📸 Foto adicionada em "${getCategoriaName(categoria)}"!`, 'success');
+                
+            } catch (error) {
+                console.error('Erro ao salvar foto:', error);
+                mostrarNotificacao('❌ Erro ao salvar foto', 'error');
+            }
+        }
+
+        // Cancelar descrição da foto
+        function cancelarDescricaoFoto() {
+            try {
+                const modal = document.getElementById('modal-descricao-foto');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+                fotoTemporaria = null;
+            } catch (error) {
+                console.error('Erro ao cancelar:', error);
+            }
+        }
+
+        // Adicionar foto diretamente a uma categoria
+        function adicionarFotoCategoria(categoria) {
+            try {
+                const input = document.getElementById('foto-input-hidden');
+                input.accept = 'image/*';
+                input.capture = 'environment';
+                input.multiple = true;
+                
+                input.onchange = function(e) {
+                    if (e.target.files && e.target.files.length > 0) {
+                        Array.from(e.target.files).forEach(file => {
+                            processarFotoParaCategoria(file, categoria);
+                        });
+                    }
+                };
+                
+                // Pré-selecionar categoria no modal
+                document.getElementById('categoria-foto-select').value = categoria;
+                input.click();
+                
+            } catch (error) {
+                console.error('Erro ao adicionar foto à categoria:', error);
+            }
+        }
+
+        // Processar foto diretamente para categoria
+        function processarFotoParaCategoria(file, categoria) {
+            try {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const novaFoto = {
+                        dataUrl: e.target.result,
+                        arquivo: file,
+                        timestamp: new Date().toLocaleString('pt-BR'),
+                        tamanho: (file.size / 1024).toFixed(1) + ' KB',
+                        descricao: `Foto ${fotosFiscalizacao[categoria].length + 1}`,
+                        categoria: categoria,
+                        id: Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+                    };
+
+                    fotosFiscalizacao[categoria].push(novaFoto);
+                    renderizarFotoNaCategoria(novaFoto, categoria);
+                    atualizarContadorFotos();
+                };
+                
+                reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('Erro ao processar foto para categoria:', error);
+            }
+        }
+
+        // Renderizar foto na interface
+        function renderizarFotoNaCategoria(foto, categoria) {
+            try {
+                const grid = document.getElementById(`fotos-${categoria}`);
+                if (!grid) return;
+
+                const fotoDiv = document.createElement('div');
+                fotoDiv.className = 'foto-item';
+                fotoDiv.setAttribute('data-foto-id', foto.id);
+                
+                fotoDiv.innerHTML = `
+                    <img src="${foto.dataUrl}" alt="${foto.descricao}">
+                    <div class="foto-overlay">
+                        <div>${foto.descricao}</div>
+                        <div style="font-size: 10px; margin-top: 5px;">${foto.timestamp}</div>
+                        <div style="font-size: 10px;">${foto.tamanho}</div>
+                    </div>
+                    <div class="foto-actions">
+                        <button class="foto-btn" onclick="removerFoto('${foto.id}', '${categoria}')" title="Remover">🗑️</button>
+                        <button class="foto-btn" onclick="editarDescricaoFoto('${foto.id}', '${categoria}')" title="Editar">✏️</button>
+                    </div>
+                `;
+
+                grid.appendChild(fotoDiv);
+            } catch (error) {
+                console.error('Erro ao renderizar foto:', error);
+            }
+        }
+
+        // Remover foto
+        function removerFoto(fotoId, categoria) {
+            try {
+                if (confirm('Tem certeza que deseja remover esta foto?')) {
+                    // Remover do array
+                    fotosFiscalizacao[categoria] = fotosFiscalizacao[categoria].filter(foto => foto.id !== fotoId);
+                    
+                    // Remover da interface
+                    const fotoElement = document.querySelector(`[data-foto-id="${fotoId}"]`);
+                    if (fotoElement) {
+                        fotoElement.remove();
+                    }
+                    
+                    atualizarContadorFotos();
+                    mostrarNotificacao('🗑️ Foto removida', 'info');
+                }
+            } catch (error) {
+                console.error('Erro ao remover foto:', error);
+            }
+        }
+
+        // Editar descrição da foto
+        function editarDescricaoFoto(fotoId, categoria) {
+            try {
+                const foto = fotosFiscalizacao[categoria].find(f => f.id === fotoId);
+                if (!foto) return;
+
+                const novaDescricao = prompt('Nova descrição:', foto.descricao);
+                if (novaDescricao !== null && novaDescricao.trim() !== '') {
+                    foto.descricao = novaDescricao.trim();
+                    
+                    // Atualizar na interface
+                    const fotoElement = document.querySelector(`[data-foto-id="${fotoId}"]`);
+                    if (fotoElement) {
+                        const overlay = fotoElement.querySelector('.foto-overlay div:first-child');
+                        if (overlay) overlay.textContent = foto.descricao;
+                    }
+                    
+                    mostrarNotificacao('✏️ Descrição atualizada', 'success');
+                }
+            } catch (error) {
+                console.error('Erro ao editar descrição:', error);
+            }
+        }
+
+        // Limpar todas as fotos
+        function limparTodasFotos() {
+            try {
+                if (confirm('Tem certeza que deseja remover TODAS as fotos?')) {
+                    // Limpar arrays
+                    Object.keys(fotosFiscalizacao).forEach(categoria => {
+                        fotosFiscalizacao[categoria] = [];
+                        const grid = document.getElementById(`fotos-${categoria}`);
+                        if (grid) grid.innerHTML = '';
+                    });
+                    
+                    atualizarContadorFotos();
+                    mostrarNotificacao('🗑️ Todas as fotos foram removidas', 'info');
+                }
+            } catch (error) {
+                console.error('Erro ao limpar fotos:', error);
+            }
+        }
+
+        // Atualizar contador de fotos
+        function atualizarContadorFotos() {
+            try {
+                const total = Object.values(fotosFiscalizacao).reduce((acc, arr) => acc + arr.length, 0);
+                const contador = document.getElementById('contador-fotos');
+                if (contador) {
+                    contador.textContent = `📊 ${total} foto${total !== 1 ? 's' : ''} adicionada${total !== 1 ? 's' : ''}`;
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar contador:', error);
+            }
+        }
+
+        // Obter nome da categoria
+        function getCategoriaName(categoria) {
+            const nomes = {
+                'fachada': '🏢 Fachada/Área Externa',
+                'internas': '🏠 Dependências Internas',
+                'documentos': '📋 Documentos/Licenças',
+                'acessibilidade': '♿ Acessibilidade',
+                'observacoes': '👁️ Observações Gerais'
+            };
+            return nomes[categoria] || categoria;
+        }
+
+        // Fechar modal ao clicar fora (EXTENSÃO da função existente)
+        const originalWindowClick = window.onclick;
+        window.onclick = function(event) {
+            if (originalWindowClick) originalWindowClick(event);
+            
+            const modalFoto = document.getElementById('modal-descricao-foto');
+            if (event.target === modalFoto) {
+                cancelarDescricaoFoto();
+            }
+        };
 
         // Sistema de notificações
         function mostrarNotificacao(mensagem, tipo = 'info', duracao = 4000) {
