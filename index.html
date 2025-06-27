@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema CAS-DF COMPLETO - Definitivo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
@@ -629,6 +630,7 @@
                 <div class="action-buttons" style="margin-top: 30px;">
                     <button onclick="voltarFormulario()" class="btn btn-secondary">⬅️ Voltar</button>
                     <button onclick="imprimirRelatorio()" class="btn btn-primary">🖨️ Imprimir</button>
+                    <button onclick="gerarPDF()" class="btn btn-success">📄 Baixar PDF</button>
                 </div>
             </div>
         </div>
@@ -668,23 +670,29 @@
         // Aplicar máscaras
         function aplicarMascaras() {
             // Máscara CNPJ
-            document.getElementById('cnpj_entidade').addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(\d{2})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1/$2');
-                value = value.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
-                e.target.value = value;
-            });
+            const cnpjInput = document.getElementById('cnpj_entidade');
+            if (cnpjInput) {
+                cnpjInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{2})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1/$2');
+                    value = value.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
 
             // Máscara CPF
-            document.getElementById('cpf_conselheiro').addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                e.target.value = value;
-            });
+            const cpfInput = document.getElementById('cpf_conselheiro');
+            if (cpfInput) {
+                cpfInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
         }
 
         // Monitorar validações
@@ -692,39 +700,62 @@
             const btnRelatorio = document.getElementById('btnRelatorio');
             const checkDeclaracao = document.getElementById('declaracao_veracidade');
             
-            checkDeclaracao.addEventListener('change', verificarLiberacao);
-            setInterval(verificarLiberacao, 1000);
+            if (checkDeclaracao) {
+                checkDeclaracao.addEventListener('change', verificarLiberacao);
+            }
+            
+            // Verificar de forma mais frequente
+            setInterval(verificarLiberacao, 500);
         }
 
         // Verificar liberação do relatório
         function verificarLiberacao() {
             const btnRelatorio = document.getElementById('btnRelatorio');
-            const declaracao = document.getElementById('declaracao_veracidade').checked;
+            const checkDeclaracao = document.getElementById('declaracao_veracidade');
             
-            if (declaracao && assinaturaValida) {
-                btnRelatorio.disabled = false;
-                btnRelatorio.style.opacity = '1';
-            } else {
-                btnRelatorio.disabled = true;
-                btnRelatorio.style.opacity = '0.5';
+            if (btnRelatorio && checkDeclaracao) {
+                const declaracao = checkDeclaracao.checked;
+                
+                if (declaracao && assinaturaValida) {
+                    btnRelatorio.disabled = false;
+                    btnRelatorio.style.opacity = '1';
+                    btnRelatorio.style.cursor = 'pointer';
+                } else {
+                    btnRelatorio.disabled = true;
+                    btnRelatorio.style.opacity = '0.5';
+                    btnRelatorio.style.cursor = 'not-allowed';
+                }
             }
         }
 
         // Gerar hash para assinatura
         function gerarHash() {
-            const dados = new FormData(document.getElementById('fiscalizacaoForm'));
-            const texto = JSON.stringify(Object.fromEntries(dados.entries()));
-            return btoa(texto).substring(0, 16).toUpperCase();
+            try {
+                const dados = new FormData(document.getElementById('fiscalizacaoForm'));
+                const objeto = {};
+                
+                // Converter FormData para objeto
+                for (let [key, value] of dados.entries()) {
+                    objeto[key] = value;
+                }
+                
+                const texto = JSON.stringify(objeto);
+                const hash = btoa(texto + new Date().getTime()).substring(0, 16).toUpperCase();
+                return hash;
+            } catch (error) {
+                console.error('Erro ao gerar hash:', error);
+                return Math.random().toString(36).substring(2, 18).toUpperCase();
+            }
         }
 
         // Assinatura digital
         function assinarDigitalmente() {
-            const cpf = document.getElementById('cpf_conselheiro').value;
-            const senha = document.getElementById('senha_assinatura').value;
-            const conselheiro = document.getElementById('nome_conselheiro').value;
+            const cpf = document.getElementById('cpf_conselheiro').value.trim();
+            const senha = document.getElementById('senha_assinatura').value.trim();
+            const conselheiro = document.getElementById('nome_conselheiro').value.trim();
             
             if (!cpf || !senha || !conselheiro) {
-                mostrarNotificacao('❌ Preencha todos os campos', 'error');
+                mostrarNotificacao('❌ Preencha todos os campos para assinar', 'error');
                 return;
             }
             
@@ -733,18 +764,28 @@
                 return;
             }
 
-            const agora = new Date().toLocaleString('pt-BR');
-            hashDocumento = gerarHash();
-            
-            document.getElementById('signatoryName').textContent = conselheiro;
-            document.getElementById('signatureDateTime').textContent = agora;
-            document.getElementById('verificationHash').textContent = hashDocumento;
-            document.getElementById('signatureInfo').style.display = 'block';
-            
-            assinaturaValida = true;
-            verificarLiberacao();
-            
-            mostrarNotificacao('✅ Documento assinado com sucesso!', 'success');
+            if (cpf.replace(/\D/g, '').length !== 11) {
+                mostrarNotificacao('❌ CPF deve ter 11 dígitos', 'error');
+                return;
+            }
+
+            try {
+                const agora = new Date().toLocaleString('pt-BR');
+                hashDocumento = gerarHash();
+                
+                document.getElementById('signatoryName').textContent = conselheiro;
+                document.getElementById('signatureDateTime').textContent = agora;
+                document.getElementById('verificationHash').textContent = hashDocumento;
+                document.getElementById('signatureInfo').style.display = 'block';
+                
+                assinaturaValida = true;
+                verificarLiberacao();
+                
+                mostrarNotificacao('✅ Documento assinado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro na assinatura:', error);
+                mostrarNotificacao('❌ Erro ao assinar documento', 'error');
+            }
         }
 
         // Validar formulário
@@ -752,11 +793,19 @@
             let erros = [];
 
             // Verificar campos obrigatórios
-            const campos = ['nome_entidade', 'cnpj_entidade', 'data_visita', 'nome_recebeu', 'funcao_recebeu', 'nome_conselheiro'];
+            const campos = [
+                { id: 'nome_entidade', nome: 'Nome da Entidade' },
+                { id: 'cnpj_entidade', nome: 'CNPJ' },
+                { id: 'data_visita', nome: 'Data da Visita' },
+                { id: 'nome_recebeu', nome: 'Nome de quem recebeu' },
+                { id: 'funcao_recebeu', nome: 'Função' },
+                { id: 'nome_conselheiro', nome: 'Nome do Conselheiro' }
+            ];
+            
             campos.forEach(campo => {
-                const elemento = document.getElementById(campo);
-                if (!elemento.value.trim()) {
-                    erros.push('Campo ' + campo.replace('_', ' ') + ' é obrigatório');
+                const elemento = document.getElementById(campo.id);
+                if (!elemento || !elemento.value.trim()) {
+                    erros.push(campo.nome + ' é obrigatório');
                 }
             });
 
@@ -773,13 +822,13 @@
             }
 
             // Verificar endereço
-            const endereco1 = document.querySelector('input[name="endereco_1"]').value;
-            if (!endereco1.trim()) {
+            const endereco1 = document.querySelector('input[name="endereco_1"]');
+            if (!endereco1 || !endereco1.value.trim()) {
                 erros.push('Preencha pelo menos o primeiro endereço');
             }
 
             if (erros.length > 0) {
-                mostrarNotificacao('❌ Erros encontrados:\n' + erros.join('\n'), 'error', 6000);
+                mostrarNotificacao('❌ Erros encontrados:\\n• ' + erros.join('\\n• '), 'error', 8000);
                 return false;
             }
 
@@ -789,112 +838,390 @@
 
         // Salvar rascunho
         function salvarRascunho() {
-            const dados = new FormData(document.getElementById('fiscalizacaoForm'));
-            const objeto = Object.fromEntries(dados.entries());
-            localStorage.setItem('cas_rascunho', JSON.stringify(objeto));
-            mostrarNotificacao('💾 Rascunho salvo!', 'success');
+            try {
+                const dados = new FormData(document.getElementById('fiscalizacaoForm'));
+                const objeto = {};
+                
+                for (let [key, value] of dados.entries()) {
+                    objeto[key] = value;
+                }
+                
+                localStorage.setItem('cas_rascunho', JSON.stringify(objeto));
+                mostrarNotificacao('💾 Rascunho salvo com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                mostrarNotificacao('❌ Erro ao salvar rascunho', 'error');
+            }
         }
 
         // Gerar relatório
         function gerarRelatorio() {
-            if (!validarFormulario()) return;
-
-            const dados = new FormData(document.getElementById('fiscalizacaoForm'));
-            const form = Object.fromEntries(dados.entries());
-
-            const servicos = Array.from(document.querySelectorAll('input[name="tipoServico"]:checked')).map(s => s.value);
-            const formas = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked')).map(f => f.value);
-
-            let relatorio = '<div style="font-family: Arial; line-height: 1.6;">';
-            relatorio += '<h3>RELATÓRIO DE FISCALIZAÇÃO - ' + numeroDocumento + '</h3>';
-            relatorio += '<p><strong>Entidade:</strong> ' + form.nome_entidade + '</p>';
-            relatorio += '<p><strong>CNPJ:</strong> ' + form.cnpj_entidade + '</p>';
-            relatorio += '<p><strong>Data:</strong> ' + new Date(form.data_visita).toLocaleDateString('pt-BR') + '</p>';
-            relatorio += '<p><strong>Horário:</strong> ' + form.horario_visita + '</p>';
-            relatorio += '<p><strong>Responsável:</strong> ' + form.nome_recebeu + ' - ' + form.funcao_recebeu + '</p>';
-            
-            relatorio += '<h4>Serviços Analisados:</h4><ul>';
-            servicos.forEach(s => relatorio += '<li>' + s + '</li>');
-            relatorio += '</ul>';
-            
-            if (formas.length > 0) {
-                relatorio += '<h4>Formas de Acesso:</h4><ul>';
-                formas.forEach(f => relatorio += '<li>' + f + '</li>');
-                relatorio += '</ul>';
+            if (!validarFormulario()) {
+                return;
             }
-            
-            if (form.obs_gerais) {
-                relatorio += '<h4>Observações Gerais:</h4><p>' + form.obs_gerais + '</p>';
-            }
-            
-            relatorio += '<h4>Voto:</h4>';
-            relatorio += '<p><strong>Análises técnicas:</strong> ' + (form.concordancia_analises || 'Não informado') + '</p>';
-            relatorio += '<p><strong>Decisão:</strong> ' + (form.voto_final || 'Não informado') + '</p>';
-            
-            relatorio += '<div style="margin-top: 30px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px;">';
-            relatorio += '<h4>✅ DOCUMENTO ASSINADO DIGITALMENTE</h4>';
-            relatorio += '<p><strong>Conselheiro:</strong> ' + form.nome_conselheiro + '</p>';
-            relatorio += '<p><strong>Data/Hora:</strong> ' + document.getElementById('signatureDateTime').textContent + '</p>';
-            relatorio += '<p><strong>Hash:</strong> ' + hashDocumento + '</p>';
-            relatorio += '</div>';
-            
-            relatorio += '<div style="margin-top: 40px;">';
-            relatorio += '<p>' + new Date(form.data_voto).toLocaleDateString('pt-BR') + '</p>';
-            relatorio += '<div style="margin-top: 50px; border-top: 1px solid black; width: 300px; text-align: center;">';
-            relatorio += '<p>' + form.nome_conselheiro + '</p>';
-            relatorio += '<p>Conselheiro(a)</p>';
-            relatorio += '</div></div></div>';
 
-            document.getElementById('reportContent').innerHTML = relatorio;
-            document.getElementById('reportSection').style.display = 'block';
-            document.getElementById('fiscalizacaoForm').style.display = 'none';
-            
-            mostrarNotificacao('✅ Relatório gerado com sucesso!', 'success');
+            if (!assinaturaValida) {
+                mostrarNotificacao('❌ Documento deve ser assinado antes de gerar o relatório', 'error');
+                return;
+            }
+
+            try {
+                const dados = new FormData(document.getElementById('fiscalizacaoForm'));
+                const form = {};
+                
+                // Converter FormData para objeto
+                for (let [key, value] of dados.entries()) {
+                    form[key] = value;
+                }
+
+                // Coletar checkboxes marcados
+                const servicos = Array.from(document.querySelectorAll('input[name="tipoServico"]:checked')).map(s => s.value);
+                const formas = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked')).map(f => f.value);
+                const especialidades = Array.from(document.querySelectorAll('input[name="especialidades"]:checked')).map(e => e.value);
+
+                let relatorio = '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+                relatorio += '<div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">';
+                relatorio += '<h2 style="margin: 0; color: #1e3c72;">RELATÓRIO DE FISCALIZAÇÃO</h2>';
+                relatorio += '<p style="margin: 5px 0; font-weight: bold;">Documento: ' + numeroDocumento + '</p>';
+                relatorio += '<p style="margin: 5px 0;">Conselho de Assistência Social do Distrito Federal</p>';
+                relatorio += '</div>';
+                
+                relatorio += '<div style="margin-bottom: 25px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">DADOS DA ENTIDADE</h3>';
+                relatorio += '<p><strong>Entidade:</strong> ' + (form.nome_entidade || '') + '</p>';
+                relatorio += '<p><strong>CNPJ:</strong> ' + (form.cnpj_entidade || '') + '</p>';
+                relatorio += '</div>';
+                
+                relatorio += '<div style="margin-bottom: 25px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">DADOS DA VISITA</h3>';
+                relatorio += '<p><strong>Data:</strong> ' + (form.data_visita ? new Date(form.data_visita + 'T00:00:00').toLocaleDateString('pt-BR') : '') + '</p>';
+                relatorio += '<p><strong>Horário:</strong> ' + (form.horario_visita || 'Não informado') + '</p>';
+                relatorio += '<p><strong>Responsável que recebeu:</strong> ' + (form.nome_recebeu || '') + ' - ' + (form.funcao_recebeu || '') + '</p>';
+                relatorio += '</div>';
+                
+                if (servicos.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">SERVIÇOS ANALISADOS</h3>';
+                    relatorio += '<ul>';
+                    servicos.forEach(s => relatorio += '<li>' + s + '</li>');
+                    relatorio += '</ul>';
+                    relatorio += '</div>';
+                }
+                
+                if (formas.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">FORMAS DE ACESSO</h3>';
+                    relatorio += '<ul>';
+                    formas.forEach(f => relatorio += '<li>' + f + '</li>');
+                    relatorio += '</ul>';
+                    relatorio += '</div>';
+                }
+
+                if (especialidades.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">ESPECIALIDADES</h3>';
+                    relatorio += '<ul>';
+                    especialidades.forEach(e => relatorio += '<li>' + e + '</li>');
+                    relatorio += '</ul>';
+                    relatorio += '</div>';
+                }
+                
+                relatorio += '<div style="margin-bottom: 25px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">VOTO DO CONSELHEIRO</h3>';
+                relatorio += '<p><strong>Análises técnicas:</strong> ' + (form.concordancia_analises || 'Não informado') + '</p>';
+                relatorio += '<p><strong>Decisão:</strong> ' + (form.voto_final || 'Não informado') + '</p>';
+                relatorio += '</div>';
+                
+                relatorio += '<div style="margin-top: 40px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px;">';
+                relatorio += '<h3 style="color: #38a169; margin-top: 0;">✅ DOCUMENTO ASSINADO DIGITALMENTE</h3>';
+                relatorio += '<p><strong>Conselheiro:</strong> ' + (form.nome_conselheiro || '') + '</p>';
+                relatorio += '<p><strong>Data/Hora da Assinatura:</strong> ' + document.getElementById('signatureDateTime').textContent + '</p>';
+                relatorio += '<p><strong>Hash de Verificação:</strong> ' + hashDocumento + '</p>';
+                relatorio += '</div>';
+                
+                relatorio += '<div style="margin-top: 50px; text-align: center;">';
+                relatorio += '<p><strong>Data do Voto:</strong> ' + (form.data_voto ? new Date(form.data_voto + 'T00:00:00').toLocaleDateString('pt-BR') : '') + '</p>';
+                relatorio += '<div style="margin-top: 60px; border-top: 1px solid #333; width: 300px; margin-left: auto; margin-right: auto; padding-top: 10px;">';
+                relatorio += '<p style="margin: 5px 0; font-weight: bold;">' + (form.nome_conselheiro || '') + '</p>';
+                relatorio += '<p style="margin: 5px 0;">Conselheiro(a) CAS-DF</p>';
+                relatorio += '</div>';
+                relatorio += '</div>';
+                
+                relatorio += '</div>';
+
+                document.getElementById('reportContent').innerHTML = relatorio;
+                document.getElementById('reportSection').style.display = 'block';
+                
+                // Esconder o formulário
+                const formElement = document.getElementById('fiscalizacaoForm').parentElement;
+                formElement.style.display = 'none';
+                
+                // Scroll para o topo
+                window.scrollTo({top: 0, behavior: 'smooth'});
+                
+                mostrarNotificacao('✅ Relatório gerado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao gerar relatório:', error);
+                mostrarNotificacao('❌ Erro ao gerar relatório', 'error');
+            }
         }
 
         // Voltar ao formulário
         function voltarFormulario() {
             document.getElementById('reportSection').style.display = 'none';
-            document.getElementById('fiscalizacaoForm').style.display = 'block';
+            
+            // Mostrar o formulário novamente
+            const formElement = document.getElementById('fiscalizacaoForm').parentElement;
+            formElement.style.display = 'block';
+            
             window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Gerar PDF para download
+        function gerarPDF() {
+            try {
+                mostrarNotificacao('📄 Gerando PDF...', 'info', 2000);
+                
+                // Configurações do PDF
+                const opcoes = {
+                    margin: [10, 10, 10, 10],
+                    filename: `Relatorio_CAS_DF_${numeroDocumento}_${new Date().toISOString().split('T')[0]}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        letterRendering: true
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait' 
+                    }
+                };
+
+                // Elemento a ser convertido
+                const elemento = document.getElementById('reportContent');
+                
+                // Gerar e baixar PDF
+                html2pdf()
+                    .set(opcoes)
+                    .from(elemento)
+                    .save()
+                    .then(() => {
+                        mostrarNotificacao('✅ PDF baixado com sucesso!', 'success');
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao gerar PDF:', error);
+                        mostrarNotificacao('❌ Erro ao gerar PDF. Tente usar Imprimir > Salvar como PDF', 'error', 6000);
+                    });
+                    
+            } catch (error) {
+                console.error('Erro na função gerarPDF:', error);
+                mostrarNotificacao('❌ Erro ao gerar PDF. Use o botão Imprimir como alternativa', 'error', 6000);
+            }
         }
 
         // Imprimir relatório
         function imprimirRelatorio() {
-            window.print();
+            const conteudo = document.getElementById('reportContent').innerHTML;
+            const janelaImpressao = window.open('', '_blank');
+            
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Relatório CAS-DF</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h2, h3 { color: #333; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    ${conteudo}
+                </body>
+                </html>
+            `);
+            
+            janelaImpressao.document.close();
+            janelaImpressao.print();
         }
 
         // Limpar formulário
         function limparFormulario() {
-            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+            if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
                 document.getElementById('fiscalizacaoForm').reset();
                 assinaturaValida = false;
-                document.getElementById('signatureInfo').style.display = 'none';
+                hashDocumento = '';
+                
+                const signatureInfo = document.getElementById('signatureInfo');
+                if (signatureInfo) {
+                    signatureInfo.style.display = 'none';
+                }
+                
                 localStorage.removeItem('cas_rascunho');
                 verificarLiberacao();
-                mostrarNotificacao('🗑️ Formulário limpo!', 'info');
+                
+                mostrarNotificacao('🗑️ Formulário limpo com sucesso!', 'info');
             }
         }
 
         // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo, duracao = 4000) {
+        function mostrarNotificacao(mensagem, tipo = 'info', duracao = 4000) {
             const notification = document.getElementById('notification');
-            const icones = {success: '✅', error: '❌', info: 'ℹ️'};
+            const icones = {
+                success: '✅', 
+                error: '❌', 
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
             
-            notification.innerHTML = (icones[tipo] || 'ℹ️') + ' ' + mensagem;
-            notification.className = 'notification ' + tipo;
-            notification.classList.add('show');
-            
-            setTimeout(() => notification.classList.remove('show'), duracao);
+            if (notification) {
+                notification.innerHTML = (icones[tipo] || 'ℹ️') + ' ' + mensagem;
+                notification.className = 'notification ' + tipo;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duracao);
+            }
+        }
+
+        // Carregar rascunho salvo
+        function carregarRascunho() {
+            try {
+                const rascunho = localStorage.getItem('cas_rascunho');
+                if (rascunho) {
+                    const dados = JSON.parse(rascunho);
+                    const form = document.getElementById('fiscalizacaoForm');
+                    
+                    Object.keys(dados).forEach(key => {
+                        const elemento = form.querySelector(`[name="${key}"]`);
+                        if (elemento) {
+                            if (elemento.type === 'checkbox' || elemento.type === 'radio') {
+                                if (elemento.value === dados[key]) {
+                                    elemento.checked = true;
+                                }
+                            } else {
+                                elemento.value = dados[key];
+                            }
+                        }
+                    });
+                    
+                    mostrarNotificacao('📋 Rascunho carregado!', 'info');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar rascunho:', error);
+            }
         }
 
         // Atalhos de teclado
         document.addEventListener('keydown', function(event) {
+            // Ctrl+S para salvar
             if (event.ctrlKey && event.key === 's') {
                 event.preventDefault();
                 salvarRascunho();
             }
+            
+            // Ctrl+Enter para validar
+            if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault();
+                validarFormulario();
+            }
+            
+            // F9 para limpar (com confirmação)
+            if (event.key === 'F9') {
+                event.preventDefault();
+                limparFormulario();
+            }
         });
+
+        // Auto-save periódico
+        setInterval(function() {
+            const form = document.getElementById('fiscalizacaoForm');
+            const dados = new FormData(form);
+            let temDados = false;
+            
+            for (let [key, value] of dados.entries()) {
+                if (value.trim()) {
+                    temDados = true;
+                    break;
+                }
+            }
+            
+            if (temDados) {
+                salvarRascunho();
+            }
+        }, 300000); // Auto-save a cada 5 minutos
+
+        // Prevenir perda de dados
+        window.addEventListener('beforeunload', function(e) {
+            if (assinaturaValida || document.getElementById('nome_entidade').value.trim()) {
+                e.returnValue = 'Você tem dados não salvos. Tem certeza que deseja sair?';
+                return e.returnValue;
+            }
+        });
+
+        // Validação em tempo real
+        document.addEventListener('input', function(e) {
+            if (e.target.required && e.target.value.trim()) {
+                e.target.style.borderColor = '#48bb78';
+            } else if (e.target.required) {
+                e.target.style.borderColor = '#f56565';
+            }
+        });
+
+        // Melhorar UX dos radio buttons
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remover destaque de outros radios do mesmo grupo
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                    r.parentElement.style.backgroundColor = '';
+                });
+                
+                // Destacar o selecionado
+                this.parentElement.style.backgroundColor = '#e6fffa';
+            });
+        });
+
+        // Adicionar botão para carregar rascunho
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('cas_rascunho')) {
+                setTimeout(() => {
+                    if (confirm('Foi encontrado um rascunho salvo. Deseja carregá-lo?')) {
+                        carregarRascunho();
+                    }
+                }, 1000);
+            }
+        });
+
+        // Debug e logging para ajudar com troubleshooting
+        window.CAS_DEBUG = {
+            verificarEstado: function() {
+                console.log('Estado do sistema:', {
+                    assinaturaValida: assinaturaValida,
+                    hashDocumento: hashDocumento,
+                    numeroDocumento: numeroDocumento,
+                    btnRelatorioDisabled: document.getElementById('btnRelatorio').disabled,
+                    declaracaoChecked: document.getElementById('declaracao_veracidade').checked
+                });
+            },
+            
+            forcarAssinatura: function() {
+                assinaturaValida = true;
+                verificarLiberacao();
+                console.log('Assinatura forçada para debug');
+            },
+            
+            resetarSistema: function() {
+                assinaturaValida = false;
+                hashDocumento = '';
+                document.getElementById('signatureInfo').style.display = 'none';
+                verificarLiberacao();
+                console.log('Sistema resetado');
+            }
+        };
+
+        console.log('Sistema CAS-DF carregado. Use CAS_DEBUG para troubleshooting.');
     </script>
 </body>
 </html>
