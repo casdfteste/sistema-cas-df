@@ -1,428 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema CAS-DF COMPLETO - Definitivo</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; text-align: center; }
-        .header h1 { font-size: 2.2em; margin-bottom: 10px; }
-        .content { padding: 40px; }
-        .form-section { margin-bottom: 40px; padding: 25px; border: 2px solid #e1e8ed; border-radius: 15px; background: #f8fafc; }
-        .form-section h3 { color: #2d3748; margin-bottom: 20px; font-size: 1.4em; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
-        .form-group { margin-bottom: 20px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568; }
-        input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; transition: all 0.3s ease; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-        .btn { padding: 15px 30px; border: none; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-secondary { background: #e2e8f0; color: #4a5568; }
-        .btn-success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
-        .btn-danger { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; }
-        .action-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
-        .checkbox-item { display: flex; align-items: flex-start; padding: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 10px; }
-        .checkbox-item input { width: auto; margin-right: 10px; transform: scale(1.2); }
-        .radio-group { display: flex; gap: 20px; margin: 10px 0; flex-wrap: wrap; }
-        .radio-group label { display: flex; align-items: center; margin-bottom: 0; }
-        .table-container { overflow-x: auto; margin: 20px 0; }
-        .form-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        .form-table th, .form-table td { border: 1px solid #e2e8f0; padding: 12px 8px; text-align: center; vertical-align: middle; }
-        .form-table th { background: #f7fafc; font-weight: 600; color: #2d3748; }
-        .form-table td:first-child { text-align: left; font-weight: 500; }
-        .endereco-container { background: white; padding: 20px; border-radius: 10px; border: 2px solid #e2e8f0; margin-top: 10px; }
-        .endereco-linha { display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: start; margin: 20px 0; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
-        .endereco-numero { font-weight: 600; font-size: 16px; color: #4a5568; min-width: 25px; padding-top: 8px; }
-        .endereco-input { width: 100%; border: none; border-bottom: 2px solid #e2e8f0; background: transparent; padding: 10px 5px; font-size: 15px; }
-        .licenca-group { display: flex; flex-direction: column; gap: 8px; min-width: 180px; }
-        .licenca-label { font-size: 12px; font-weight: 600; color: #4a5568; }
-        .licenca-options { display: flex; gap: 15px; }
-        .radio-inline { display: flex; align-items: center; gap: 5px; font-size: 14px; margin: 0; cursor: pointer; }
-        .articulacao-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-        .articulacao-table th, .articulacao-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: center; }
-        .articulacao-table td:first-child { text-align: left; font-weight: 500; background: #f9f9f9; }
-        .articulacao-table input[type="text"] { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 12px; }
-        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 600; z-index: 1001; opacity: 0; transform: translateX(100%); transition: all 0.3s ease; max-width: 400px; }
-        .notification.show { opacity: 1; transform: translateX(0); }
-        .notification.success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
-        .notification.error { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); }
-        .notification.info { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
-        .correcao-badge { display: inline-block; background: #48bb78; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-left: 10px; }
-        .assinatura-section { border: 3px solid #f56565; background: #fef5e7; }
-        .signature-info { display: none; margin-top: 20px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 10px; }
-        .voto-options { margin: 15px 0; }
-        .voto-options > div { margin-bottom: 10px; padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; }
-        @media (max-width: 768px) {
-            .endereco-linha { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .checkbox-grid { grid-template-columns: 1fr; }
-            .action-buttons { flex-direction: column; align-items: center; }
-            .btn { width: 100%; max-width: 300px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏛️ CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h1>
-            <p>SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF - CEP 70.770-502</p>
-            <p>E-mail: Cas_df@sedes.df.gov.br</p>
-            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 10px;">
-                <strong>✅ SISTEMA COMPLETO - SEM ERROS JAVASCRIPT</strong>
-            </div>
-        </div>
-
-        <div class="content">
-            <form id="fiscalizacaoForm">
-                <!-- Este voto analisará o seguinte serviço -->
-                <div class="form-section">
-                    <h3>📋 Este voto analisará o seguinte serviço: <span class="correcao-badge">FICHA OFICIAL</span></h3>
-                    <div style="background: white; padding: 20px; border-radius: 10px;">
-                        <p style="margin-bottom: 15px; font-weight: 600;">Marque a(s) opção(ões) correspondente(s):</p>
-                        <div class="checkbox-grid">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="acoes_assessoramento" name="tipoServico" value="1. Ações de Assessoramento">
-                                <label for="acoes_assessoramento">1. Ações de Assessoramento</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="acoes_defesa" name="tipoServico" value="2. Ações de Defesa e Garantia de Direitos">
-                                <label for="acoes_defesa">2. Ações de Defesa e Garantia de Direitos</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="promocao_integracao" name="tipoServico" value="3. Promoção da integração ao mundo do trabalho">
-                                <label for="promocao_integracao">3. Promoção da integração ao mundo do trabalho</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="servico_convivencia" name="tipoServico" value="4. Serviço de Convivência e Fortalecimento de Vínculos">
-                                <label for="servico_convivencia">4. Serviço de Convivência e Fortalecimento de Vínculos</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="servico_protecao_5" name="tipoServico" value="5. Serviço de Proteção e Atendimento Especializado a Famílias e Indivíduos">
-                                <label for="servico_protecao_5">5. Serviço de Proteção e Atendimento Especializado a Famílias e Indivíduos</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="servico_protecao_6" name="tipoServico" value="6. Serviço de Proteção e Atendimento Especializado a Mulheres">
-                                <label for="servico_protecao_6">6. Serviço de Proteção e Atendimento Especializado a Mulheres</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="servico_medidas_7" name="tipoServico" value="7. Serviço de Proteção Social a Adolescentes em Cumprimento de Medida Socioeducativa">
-                                <label for="servico_medidas_7">7. Serviço de Proteção Social a Adolescentes em Cumprimento de Medida Socioeducativa</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="abordagem_social" name="tipoServico" value="8. Serviço de Abordagem Social">
-                                <label for="abordagem_social">8. Serviço de Abordagem Social</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="acolhimento" name="tipoServico" value="9. Serviço de Acolhimento">
-                                <label for="acolhimento">9. Serviço de Acolhimento</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 1. DOCUMENTOS DISPONIBILIZADOS -->
-                <div class="form-section">
-                    <h3>📄 1. DOCUMENTOS DISPONIBILIZADOS:</h3>
-                    <div class="form-group">
-                        <label for="pareceres_tecnicos">Parecer(s) Técnico(s) nº:</label>
-                        <input type="text" id="pareceres_tecnicos" name="pareceres_tecnicos">
-                    </div>
-                    <div class="form-group">
-                        <label for="notas_tecnicas">Nota(s) Técnica(s) nº:</label>
-                        <input type="text" id="notas_tecnicas" name="notas_tecnicas">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="plano_acao_ano">Plano de Ação Ano:</label>
-                            <input type="number" id="plano_acao_ano" name="plano_acao_ano" min="2020" max="2030">
-                        </div>
-                        <div class="form-group">
-                            <label for="relatorio_atividades_ano">Relatório de Atividades Ano:</label>
-                            <input type="number" id="relatorio_atividades_ano" name="relatorio_atividades_ano" min="2020" max="2030">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. DA VISITA -->
-                <div class="form-section">
-                    <h3>🏢 2. DA VISITA</h3>
-
-                    <!-- Dados da Entidade -->
-                    <div class="form-group">
-                        <label style="font-size: 1.1em; color: white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 15px; border-radius: 8px; display: inline-block; margin-bottom: 20px;">📋 Dados da Entidade Visitada:</label>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="nome_entidade">Nome da Entidade:</label>
-                                <input type="text" id="nome_entidade" name="nome_entidade" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="cnpj_entidade">CNPJ:</label>
-                                <input type="text" id="cnpj_entidade" name="cnpj_entidade" maxlength="18" required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="data_visita">2.1. Data:</label>
-                            <input type="date" id="data_visita" name="data_visita" required>
-                        </div>
-                        <div class="form-group">
-                            <label>2.2. Horário:</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="horario_visita" value="matutino"> matutino</label>
-                                <label><input type="radio" name="horario_visita" value="vespertino"> vespertino</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nome_recebeu">2.3. Nome de quem recebeu o conselheiro:</label>
-                            <input type="text" id="nome_recebeu" name="nome_recebeu" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="funcao_recebeu">Função:</label>
-                            <input type="text" id="funcao_recebeu" name="funcao_recebeu" required>
-                        </div>
-                    </div>
-
-                    <!-- 2.4. Endereços -->
-                    <div class="form-group">
-                        <label>2.4. Endereço(s) visitado(s):</label>
-                        <div class="endereco-container">
-                            <div class="endereco-linha">
-                                <div class="endereco-numero">1:</div>
-                                <div>
-                                    <input type="text" name="endereco_1" class="endereco-input" placeholder="Endereço completo" required>
-                                </div>
-                                <div class="licenca-group">
-                                    <span class="licenca-label">Licença de Funcionamento:</span>
-                                    <div class="licenca-options">
-                                        <label class="radio-inline"><input type="radio" name="licenca_1" value="sim"> Sim</label>
-                                        <label class="radio-inline"><input type="radio" name="licenca_1" value="nao"> Não</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="endereco-linha">
-                                <div class="endereco-numero">2:</div>
-                                <div>
-                                    <input type="text" name="endereco_2" class="endereco-input" placeholder="Endereço completo (se houver)">
-                                </div>
-                                <div class="licenca-group">
-                                    <span class="licenca-label">Licença de Funcionamento:</span>
-                                    <div class="licenca-options">
-                                        <label class="radio-inline"><input type="radio" name="licenca_2" value="sim"> Sim</label>
-                                        <label class="radio-inline"><input type="radio" name="licenca_2" value="nao"> Não</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2.5. Público-alvo -->
-                    <div class="form-group">
-                        <label>2.5. Público-alvo:</label>
-                        <div class="table-container">
-                            <table class="form-table">
-                                <thead>
-                                    <tr>
-                                        <th>Público</th>
-                                        <th>CDI/DF</th>
-                                        <th>CDCA/DF</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Pessoas idosas (mais de 60 anos)</td>
-                                        <td>
-                                            <label><input type="radio" name="cdi_idosos" value="sim"> sim</label>
-                                            <label><input type="radio" name="cdi_idosos" value="nao"> não</label>
-                                        </td>
-                                        <td>não se aplica</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Crianças e adolescentes (até 18 anos)</td>
-                                        <td>não se aplica</td>
-                                        <td>
-                                            <label><input type="radio" name="cdca_criancas" value="sim"> sim</label>
-                                            <label><input type="radio" name="cdca_criancas" value="nao"> não</label>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Famílias</td>
-                                        <td>
-                                            <label><input type="radio" name="cdi_familias" value="sim"> sim</label>
-                                            <label><input type="radio" name="cdi_familias" value="nao"> não</label>
-                                        </td>
-                                        <td>
-                                            <label><input type="radio" name="cdca_familias" value="sim"> sim</label>
-                                            <label><input type="radio" name="cdca_familias" value="nao"> não</label>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Adultos (entre 18 a 59 anos)</td>
-                                        <td>não se aplica</td>
-                                        <td>não se aplica</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Resto das seções - simplificadas para evitar erros -->
-                    <div class="form-group">
-                        <label>2.6. Formas de acesso dos usuários:</label>
-                        <div class="checkbox-grid">
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="formasAcesso" value="Procura espontânea">
-                                <label>Procura espontânea</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="formasAcesso" value="Busca ativa">
-                                <label>Busca ativa</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="formasAcesso" value="Encaminhamento CRAS">
-                                <label>Encaminhamento CRAS</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="formasAcesso" value="Encaminhamento CREAS">
-                                <label>Encaminhamento CREAS</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="num_voluntarios">2.7. Nº de voluntários:</label>
-                            <input type="number" id="num_voluntarios" name="num_voluntarios" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="num_contratados">Nº de contratados:</label>
-                            <input type="number" id="num_contratados" name="num_contratados" min="0">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>2.8. Especialidades que atuam na oferta socioassistencial:</label>
-                        <div class="checkbox-grid">
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="assistente social">
-                                <label>assistente social</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="psicólogo">
-                                <label>psicólogo</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="pedagogo">
-                                <label>pedagogo</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="terapeuta ocupacional">
-                                <label>terapeuta ocupacional</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="profissional do direito">
-                                <label>profissional do direito</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="cuidador social">
-                                <label>cuidador social (nível médio)</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="auxiliar administrativo">
-                                <label>auxiliar administrativo (nível médio)</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" name="especialidades" value="agente social">
-                                <label>agente social (nível médio)</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="outras_especialidades">outros:</label>
-                            <input type="text" id="outras_especialidades" name="outras_especialidades" placeholder="Especifique outras especialidades">
-                        </div>
-                    </div>
-
-                    <!-- 2.9. Infraestrutura -->
-                    <div class="form-group">
-                        <label>2.9. Infraestrutura:</label>
-                        
-                        <div class="form-group">
-                            <label>a) O Espaço é:</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="tipo_espaco" value="próprio"> próprio</label>
-                                <label><input type="radio" name="tipo_espaco" value="alugado"> alugado</label>
-                                <label><input type="radio" name="tipo_espaco" value="cedido"> cedido</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>b) Atende aos critérios de acessibilidade?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="acessibilidade" value="sim"> sim</label>
-                                <label><input type="radio" name="acessibilidade" value="nao"> não</label>
-                            </div>
-                            <div class="form-group">
-                                <label for="obs_acessibilidade">Observações:</label>
-                                <textarea id="obs_acessibilidade" name="obs_acessibilidade" rows="2"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>c) Compartilha o espaço com outros serviços?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="compartilha_espaco" value="sim"> sim</label>
-                                <label><input type="radio" name="compartilha_espaco" value="nao"> não</label>
-                            </div>
-                            <div class="form-group">
-                                <label for="obs_compartilhamento">Observações:</label>
-                                <textarea id="obs_compartilhamento" name="obs_compartilhamento" rows="2"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>d) O espaço atende de forma satisfatória a execução da oferta socioassistencial?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="espaco_satisfatorio" value="sim"> sim</label>
-                                <label><input type="radio" name="espaco_satisfatorio" value="nao"> não</label>
-                            </div>
-                            <div class="form-group">
-                                <label for="obs_espaco">Observações:</label>
-                                <textarea id="obs_espaco" name="obs_espaco" rows="2"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2.10. Do caráter contínuo e permanente -->
-                    <div class="form-group">
-                        <label>2.10. Do caráter contínuo e permanente:</label>
-                        
-                        <div class="form-group">
-                            <label>a) Possui atividades de Dezembro a Dezembro?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="atividades_continuas" value="sim"> sim</label>
-                                <label><input type="radio" name="atividades_continuas" value="nao"> não</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>b) Possui recesso/férias coletivas?</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="recesso_ferias" value="sim"> sim</label>
-                                <label><input type="radio" name="recesso_ferias" value="nao"> não</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2.11. Ações gratuitas -->
+<!-- 2.11. Ações gratuitas -->
                     <div class="form-group">
                         <label>2.11. As ações ofertadas são totalmente gratuitas?</label>
                         <div class="radio-group">
@@ -646,9 +222,14 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sistema CAS-DF iniciando...');
+            
             const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('data_visita').value = hoje;
-            document.getElementById('data_voto').value = hoje;
+            const dataVisita = document.getElementById('data_visita');
+            const dataVoto = document.getElementById('data_voto');
+            
+            if (dataVisita) dataVisita.value = hoje;
+            if (dataVoto) dataVoto.value = hoje;
             
             gerarNumeroDocumento();
             aplicarMascaras();
@@ -657,7 +238,6 @@
             mostrarNotificacao('✅ Sistema CAS-DF carregado com sucesso!', 'success');
         });
 
-        // Gerar número do documento
         function gerarNumeroDocumento() {
             const ano = new Date().getFullYear();
             const contador = localStorage.getItem('cas_contador') || '0';
@@ -666,9 +246,7 @@
             localStorage.setItem('cas_contador', novoContador);
         }
 
-        // Aplicar máscaras
         function aplicarMascaras() {
-            // Máscara CNPJ
             const cnpjInput = document.getElementById('cnpj_entidade');
             if (cnpjInput) {
                 cnpjInput.addEventListener('input', function(e) {
@@ -681,7 +259,6 @@
                 });
             }
 
-            // Máscara CPF
             const cpfInput = document.getElementById('cpf_conselheiro');
             if (cpfInput) {
                 cpfInput.addEventListener('input', function(e) {
@@ -694,7 +271,6 @@
             }
         }
 
-        // Monitorar validações
         function monitorarValidacoes() {
             const btnRelatorio = document.getElementById('btnRelatorio');
             const checkDeclaracao = document.getElementById('declaracao_veracidade');
@@ -703,11 +279,9 @@
                 checkDeclaracao.addEventListener('change', verificarLiberacao);
             }
             
-            // Verificar de forma mais frequente
             setInterval(verificarLiberacao, 500);
         }
 
-        // Verificar liberação do relatório
         function verificarLiberacao() {
             const btnRelatorio = document.getElementById('btnRelatorio');
             const checkDeclaracao = document.getElementById('declaracao_veracidade');
@@ -727,46 +301,36 @@
             }
         }
 
-        // Gerar hash para assinatura
         function gerarHash() {
             try {
                 const dados = new FormData(document.getElementById('fiscalizacaoForm'));
                 const objeto = {};
                 
-                // Converter FormData para objeto
                 for (let [key, value] of dados.entries()) {
                     objeto[key] = value;
                 }
                 
-                // Converter para string e remover caracteres especiais
                 const texto = JSON.stringify(objeto);
                 const textoLimpo = texto
                     .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-                    .replace(/[^\x00-\x7F]/g, ''); // Remove caracteres não-ASCII
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^\x00-\x7F]/g, '');
                 
-                // Gerar hash simples e seguro
                 let hash = 0;
                 for (let i = 0; i < textoLimpo.length; i++) {
                     const char = textoLimpo.charCodeAt(i);
                     hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash; // Converter para 32bit
+                    hash = hash & hash;
                 }
                 
-                // Converter para string hexadecimal e adicionar timestamp
                 const timestamp = new Date().getTime().toString(36);
-                const hashFinal = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0') + timestamp.slice(-4).toUpperCase();
-                
-                return hashFinal;
+                return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0') + timestamp.slice(-4).toUpperCase();
             } catch (error) {
                 console.error('Erro ao gerar hash:', error);
-                // Fallback: hash baseado em timestamp
-                const timestamp = new Date().getTime();
-                return timestamp.toString(16).toUpperCase().padStart(12, '0');
+                return new Date().getTime().toString(16).toUpperCase().padStart(12, '0');
             }
         }
 
-        // Assinatura digital
         function assinarDigitalmente() {
             const cpf = document.getElementById('cpf_conselheiro').value.trim();
             const senha = document.getElementById('senha_assinatura').value.trim();
@@ -806,11 +370,9 @@
             }
         }
 
-        // Validar formulário
         function validarFormulario() {
             let erros = [];
 
-            // Verificar campos obrigatórios
             const campos = [
                 { id: 'nome_entidade', nome: 'Nome da Entidade' },
                 { id: 'cnpj_entidade', nome: 'CNPJ' },
@@ -827,26 +389,23 @@
                 }
             });
 
-            // Verificar serviços selecionados
             const servicos = document.querySelectorAll('input[name="tipoServico"]:checked');
             if (servicos.length === 0) {
                 erros.push('Selecione pelo menos um serviço');
             }
 
-            // Verificar horário
             const horario = document.querySelector('input[name="horario_visita"]:checked');
             if (!horario) {
                 erros.push('Selecione o horário da visita');
             }
 
-            // Verificar endereço
             const endereco1 = document.querySelector('input[name="endereco_1"]');
             if (!endereco1 || !endereco1.value.trim()) {
                 erros.push('Preencha pelo menos o primeiro endereço');
             }
 
             if (erros.length > 0) {
-                mostrarNotificacao('❌ Erros encontrados:\\n• ' + erros.join('\\n• '), 'error', 8000);
+                mostrarNotificacao('❌ Erros: ' + erros.join(', '), 'error', 8000);
                 return false;
             }
 
@@ -854,7 +413,6 @@
             return true;
         }
 
-        // Salvar rascunho
         function salvarRascunho() {
             try {
                 const dados = new FormData(document.getElementById('fiscalizacaoForm'));
@@ -865,194 +423,220 @@
                 }
                 
                 localStorage.setItem('cas_rascunho', JSON.stringify(objeto));
-                mostrarNotificacao('💾 Rascunho salvo com sucesso!', 'success');
+                mostrarNotificacao('💾 Rascunho salvo!', 'success');
             } catch (error) {
                 console.error('Erro ao salvar:', error);
-                mostrarNotificacao('❌ Erro ao salvar rascunho', 'error');
+                mostrarNotificacao('❌ Erro ao salvar', 'error');
             }
         }
 
-        // Gerar relatório
         function gerarRelatorio() {
-            console.log('Iniciando geração do relatório...');
-            
-            if (!validarFormulario()) {
-                console.log('Validação falhou');
-                return;
-            }
+            if (!validarFormulario()) return;
 
             if (!assinaturaValida) {
-                mostrarNotificacao('❌ Documento deve ser assinado antes de gerar o relatório', 'error');
+                mostrarNotificacao('❌ Assine o documento antes de gerar o relatório', 'error');
                 return;
             }
 
             try {
-                console.log('Coletando dados do formulário...');
                 const dados = new FormData(document.getElementById('fiscalizacaoForm'));
-                const form = {};
+                const formulario = {};
                 
-                // Converter FormData para objeto
                 for (let [key, value] of dados.entries()) {
-                    form[key] = value;
+                    if (formulario[key]) {
+                        if (Array.isArray(formulario[key])) {
+                            formulario[key].push(value);
+                        } else {
+                            formulario[key] = [formulario[key], value];
+                        }
+                    } else {
+                        formulario[key] = value;
+                    }
                 }
-                console.log('Dados coletados:', form);
 
-                // Coletar checkboxes marcados
                 const servicos = Array.from(document.querySelectorAll('input[name="tipoServico"]:checked')).map(s => s.value);
-                const formas = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked')).map(f => f.value);
+                const formasAcesso = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked')).map(f => f.value);
                 const especialidades = Array.from(document.querySelectorAll('input[name="especialidades"]:checked')).map(e => e.value);
 
-                console.log('Serviços:', servicos);
-                console.log('Formas de acesso:', formas);
-
-                let relatorio = '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto;">';
-                relatorio += '<div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">';
-                relatorio += '<h2 style="margin: 0; color: #1e3c72;">🏛️ CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h2>';
-                relatorio += '<h3 style="margin: 10px 0; color: #2d3748;">RELATÓRIO DE FISCALIZAÇÃO</h3>';
-                relatorio += '<p style="margin: 5px 0; font-weight: bold;">Documento: ' + numeroDocumento + '</p>';
-                relatorio += '<p style="margin: 5px 0; font-size: 14px;">SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF</p>';
+                let relatorio = '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px;">';
+                
+                // Cabeçalho
+                relatorio += '<div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #1e3c72; padding-bottom: 20px;">';
+                relatorio += '<h1 style="margin: 0; color: #1e3c72; font-size: 24px;">🏛️ CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h1>';
+                relatorio += '<p style="margin: 5px 0; font-size: 14px;">SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF - CEP 70.770-502</p>';
+                relatorio += '<p style="margin: 5px 0; font-size: 14px;">E-mail: Cas_df@sedes.df.gov.br</p>';
+                relatorio += '<h2 style="margin: 15px 0; color: #2d3748; font-size: 20px;">RELATÓRIO DE FISCALIZAÇÃO</h2>';
+                relatorio += '<p style="margin: 5px 0; font-weight: bold; font-size: 16px;">Documento: ' + numeroDocumento + '</p>';
                 relatorio += '</div>';
                 
-                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">📋 DADOS DA ENTIDADE</h3>';
-                relatorio += '<p><strong>Entidade:</strong> ' + (form.nome_entidade || 'Não informado') + '</p>';
-                relatorio += '<p><strong>CNPJ:</strong> ' + (form.cnpj_entidade || 'Não informado') + '</p>';
-                relatorio += '</div>';
-                
-                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">🏢 DADOS DA VISITA</h3>';
-                relatorio += '<p><strong>Data:</strong> ' + (form.data_visita ? new Date(form.data_visita + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não informado') + '</p>';
-                relatorio += '<p><strong>Horário:</strong> ' + (form.horario_visita || 'Não informado') + '</p>';
-                relatorio += '<p><strong>Responsável que recebeu:</strong> ' + (form.nome_recebeu || 'Não informado') + ' - ' + (form.funcao_recebeu || 'Não informado') + '</p>';
-                relatorio += '</div>';
-                
-                if (servicos.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">📋 SERVIÇOS ANALISADOS</h3>';
+                // 1. Documentos
+                if (formulario.pareceres_tecnicos || formulario.notas_tecnicas || formulario.plano_acao_ano || formulario.relatorio_atividades_ano) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">📋 4. SERVIÇOS ANALISADOS</h3>';
                     relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
                     servicos.forEach(s => relatorio += '<li style="margin-bottom: 5px;">' + s + '</li>');
                     relatorio += '</ul>';
                     relatorio += '</div>';
                 }
                 
-                if (formas.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">🚪 FORMAS DE ACESSO</h3>';
+                // 5. Formas de Acesso
+                if (formasAcesso.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #38b2ac;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">🚪 5. FORMAS DE ACESSO</h3>';
                     relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
-                    formas.forEach(f => relatorio += '<li style="margin-bottom: 5px;">' + f + '</li>');
+                    formasAcesso.forEach(f => relatorio += '<li style="margin-bottom: 5px;">' + f + '</li>');
                     relatorio += '</ul>';
                     relatorio += '</div>';
                 }
 
+                // 6. Especialidades
                 if (especialidades.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">👥 ESPECIALIDADES</h3>';
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #ed8936;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">👥 6. ESPECIALIDADES</h3>';
                     relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
                     especialidades.forEach(e => relatorio += '<li style="margin-bottom: 5px;">' + e + '</li>');
                     relatorio += '</ul>';
+                    if (formulario.outras_especialidades) {
+                        relatorio += '<p><strong>Outras:</strong> ' + formulario.outras_especialidades + '</p>';
+                    }
                     relatorio += '</div>';
                 }
                 
-                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">⚖️ VOTO DO CONSELHEIRO</h3>';
-                relatorio += '<p><strong>Análises técnicas:</strong> ' + (form.concordancia_analises || 'Não informado') + '</p>';
-                relatorio += '<p><strong>Decisão:</strong> ' + (form.voto_final || 'Não informado') + '</p>';
-                relatorio += '</div>';
-                
-                relatorio += '<div style="margin-top: 40px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px;">';
-                relatorio += '<h3 style="color: #38a169; margin-top: 0;">✅ DOCUMENTO ASSINADO DIGITALMENTE</h3>';
-                relatorio += '<p><strong>Conselheiro:</strong> ' + (form.nome_conselheiro || 'Não informado') + '</p>';
-                relatorio += '<p><strong>Data/Hora da Assinatura:</strong> ' + document.getElementById('signatureDateTime').textContent + '</p>';
-                relatorio += '<p><strong>Hash de Verificação:</strong> ' + hashDocumento + '</p>';
-                relatorio += '</div>';
-                
-                relatorio += '<div style="margin-top: 50px; text-align: center; border-top: 1px solid #ccc; padding-top: 20px;">';
-                relatorio += '<p><strong>Data do Voto:</strong> ' + (form.data_voto ? new Date(form.data_voto + 'T00:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')) + '</p>';
-                relatorio += '<div style="margin-top: 60px; border-top: 1px solid #333; width: 300px; margin-left: auto; margin-right: auto; padding-top: 10px;">';
-                relatorio += '<p style="margin: 5px 0; font-weight: bold;">' + (form.nome_conselheiro || 'Nome do Conselheiro') + '</p>';
-                relatorio += '<p style="margin: 5px 0;">Conselheiro(a) CAS-DF</p>';
-                relatorio += '</div>';
-                relatorio += '</div>';
-                
-                relatorio += '</div>';
-
-                console.log('Relatório HTML gerado, tamanho:', relatorio.length);
-
-                // Inserir o relatório no DOM
-                const reportContent = document.getElementById('reportContent');
-                if (!reportContent) {
-                    console.error('Elemento reportContent não encontrado!');
-                    mostrarNotificacao('❌ Erro interno: elemento reportContent não encontrado', 'error');
-                    return;
+                // 7. Infraestrutura
+                let infraInfo = [];
+                if (formulario.tipo_espaco) infraInfo.push('Espaço: ' + formulario.tipo_espaco);
+                if (formulario.acessibilidade) {
+                    infraInfo.push('Acessibilidade: ' + (formulario.acessibilidade === 'sim' ? 'Sim' : 'Não'));
+                    if (formulario.obs_acessibilidade) infraInfo.push('Obs. Acessibilidade: ' + formulario.obs_acessibilidade);
+                }
+                if (formulario.compartilha_espaco) {
+                    infraInfo.push('Compartilha espaço: ' + (formulario.compartilha_espaco === 'sim' ? 'Sim' : 'Não'));
+                    if (formulario.obs_compartilhamento) infraInfo.push('Obs. Compartilhamento: ' + formulario.obs_compartilhamento);
+                }
+                if (formulario.espaco_satisfatorio) {
+                    infraInfo.push('Espaço satisfatório: ' + (formulario.espaco_satisfatorio === 'sim' ? 'Sim' : 'Não'));
+                    if (formulario.obs_espaco) infraInfo.push('Obs. Espaço: ' + formulario.obs_espaco);
                 }
                 
-                reportContent.innerHTML = relatorio;
-                console.log('Relatório inserido no DOM');
+                if (infraInfo.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #4299e1;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">🏗️ 7. INFRAESTRUTURA</h3>';
+                    infraInfo.forEach(info => relatorio += '<p>• ' + info + '</p>');
+                    relatorio += '</div>';
+                }
 
-                // Mostrar seção do relatório
-                const reportSection = document.getElementById('reportSection');
-                if (!reportSection) {
-                    console.error('Elemento reportSection não encontrado!');
-                    mostrarNotificacao('❌ Erro interno: elemento reportSection não encontrado', 'error');
-                    return;
+                // 8. Caráter Contínuo
+                if (formulario.atividades_continuas || formulario.recesso_ferias) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #38a169;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">📅 8. CARÁTER CONTÍNUO</h3>';
+                    if (formulario.atividades_continuas) relatorio += '<p>• Atividades dez a dez: ' + (formulario.atividades_continuas === 'sim' ? 'Sim' : 'Não') + '</p>';
+                    if (formulario.recesso_ferias) relatorio += '<p>• Recesso/férias: ' + (formulario.recesso_ferias === 'sim' ? 'Sim' : 'Não') + '</p>';
+                    relatorio += '</div>';
+                }
+
+                // 9. Ações Gratuitas
+                if (formulario.acoes_gratuitas) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #e53e3e;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">💰 9. AÇÕES GRATUITAS</h3>';
+                    relatorio += '<p>• Totalmente gratuitas: ' + (formulario.acoes_gratuitas === 'sim' ? 'Sim' : 'Não') + '</p>';
+                    if (formulario.especificar_nao_gratuitas) relatorio += '<p>• Especificação: ' + formulario.especificar_nao_gratuitas + '</p>';
+                    if (formulario.especificar_bpc) relatorio += '<p>• BPC: ' + formulario.especificar_bpc + '</p>';
+                    relatorio += '</div>';
+                }
+
+                // 10. Articulação com a Rede
+                let articulacaoInfo = [];
+                if (formulario.articulacao_cras) articulacaoInfo.push('CRAS: ' + (formulario.articulacao_cras === 'sim' ? 'Sim' : 'Não') + (formulario.obs_cras ? ' - ' + formulario.obs_cras : ''));
+                if (formulario.articulacao_creas) articulacaoInfo.push('CREAS: ' + (formulario.articulacao_creas === 'sim' ? 'Sim' : 'Não') + (formulario.obs_creas ? ' - ' + formulario.obs_creas : ''));
+                if (formulario.articulacao_saude) articulacaoInfo.push('Saúde: ' + (formulario.articulacao_saude === 'sim' ? 'Sim' : 'Não') + (formulario.obs_saude ? ' - ' + formulario.obs_saude : ''));
+                if (formulario.articulacao_educacao) articulacaoInfo.push('Educação: ' + (formulario.articulacao_educacao === 'sim' ? 'Sim' : 'Não') + (formulario.obs_educacao ? ' - ' + formulario.obs_educacao : ''));
+                if (formulario.articulacao_habitacao) articulacaoInfo.push('Habitação: ' + (formulario.articulacao_habitacao === 'sim' ? 'Sim' : 'Não') + (formulario.obs_habitacao ? ' - ' + formulario.obs_habitacao : ''));
+                if (formulario.articulacao_trabalho) articulacaoInfo.push('Trabalho e Renda: ' + (formulario.articulacao_trabalho === 'sim' ? 'Sim' : 'Não') + (formulario.obs_trabalho ? ' - ' + formulario.obs_trabalho : ''));
+                if (formulario.articulacao_justica) articulacaoInfo.push('Sistema de Justiça: ' + (formulario.articulacao_justica === 'sim' ? 'Sim' : 'Não') + (formulario.obs_justica ? ' - ' + formulario.obs_justica : ''));
+                
+                if (articulacaoInfo.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #805ad5;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">🔗 10. ARTICULAÇÃO COM A REDE</h3>';
+                    articulacaoInfo.forEach(info => relatorio += '<p>• ' + info + '</p>');
+                    relatorio += '</div>';
+                }
+
+                // 11. Correspondência das Ações
+                if (formulario.acoes_correspondem || formulario.obs_acoes_correspondem) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #3182ce;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">📊 11. CORRESPONDÊNCIA DAS AÇÕES</h3>';
+                    if (formulario.acoes_correspondem) relatorio += '<p>• Correspondem à inscrição: ' + (formulario.acoes_correspondem === 'sim' ? 'Sim' : 'Não') + '</p>';
+                    if (formulario.obs_acoes_correspondem) relatorio += '<p>• Observações: ' + formulario.obs_acoes_correspondem + '</p>';
+                    relatorio += '</div>';
+                }
+
+                // 12. Metodologia
+                if (formulario.metodologia_adequada || formulario.obs_metodologia) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #065f46;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;">🎯 12. METODOLOGIA</h3>';
+                    if (formulario.metodologia_adequada) relatorio += '<p>• Atende diretrizes: ' + (formulario.metodologia_adequada === 'sim' ? 'Sim' : 'Não') + '</p>';
+                    if (formulario.obs_metodologia) relatorio += '<p>• Observações: ' + formulario.obs_metodologia + '</p>';
+                    relatorio += '</div>';
                 }
                 
-                reportSection.style.display = 'block';
-                console.log('Seção do relatório mostrada');
-
-                // Esconder o formulário
-                const contentDiv = document.querySelector('.content');
-                const formElement = document.getElementById('fiscalizacaoForm');
-                if (formElement) {
-                    formElement.style.display = 'none';
-                    console.log('Formulário escondido');
-                }
+                // 13. Voto do Conselheiro
+                relatorio += '<div style="margin-bottom: 25px; background: #fff3cd; padding: 20px; border-radius: 8px; border: 2px solid #ffc107;">';
+                relatorio += '<h3 style="color: #2d3748; margin-top: 0;">⚖️ 13. VOTO DO CONSELHEIRO</h3>';
+                if (formulario.concordancia_analises) relatorio += '<p><strong>Análises técnicas:</strong> ' + (formulario.concordancia_analises === 'concorda' ? 'Concorda' : 'Discorda') + '</p>';
+                if (formulario.voto_final) relatorio += '<p><strong>Decisão:</strong> ' + formulario.voto_final + '</p>';
+                relatorio += '</div>';
                 
-                // Scroll para o topo
+                // 14. Assinatura Digital
+                relatorio += '<div style="margin-top: 40px; padding: 25px; background: #f0fff4; border: 3px solid #48bb78; border-radius: 10px;">';
+                relatorio += '<h3 style="color: #38a169; margin-top: 0; text-align: center;">✅ DOCUMENTO ASSINADO DIGITALMENTE</h3>';
+                relatorio += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">';
+                relatorio += '<p><strong>Conselheiro:</strong> ' + (formulario.nome_conselheiro || 'Não informado') + '</p>';
+                relatorio += '<p><strong>Data/Hora:</strong> ' + document.getElementById('signatureDateTime').textContent + '</p>';
+                relatorio += '</div>';
+                relatorio += '<p style="text-align: center;"><strong>Hash:</strong> <code style="background: #e2e8f0; padding: 5px 10px; border-radius: 5px;">' + hashDocumento + '</code></p>';
+                relatorio += '</div>';
+                
+                // 15. Assinatura Final
+                relatorio += '<div style="margin-top: 50px; text-align: center; border-top: 2px solid #ccc; padding-top: 30px;">';
+                relatorio += '<p style="margin-bottom: 20px;"><strong>Data do Voto:</strong> ' + (formulario.data_voto ? new Date(formulario.data_voto + 'T00:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')) + '</p>';
+                relatorio += '<div style="margin-top: 80px; border-top: 2px solid #333; width: 400px; margin-left: auto; margin-right: auto; padding-top: 15px;">';
+                relatorio += '<p style="margin: 8px 0; font-weight: bold; font-size: 16px;">' + (formulario.nome_conselheiro || 'Nome do Conselheiro') + '</p>';
+                relatorio += '<p style="margin: 8px 0; font-size: 14px;">Conselheiro(a) do CAS-DF</p>';
+                relatorio += '</div>';
+                relatorio += '</div>';
+                
+                relatorio += '</div>';
+
+                document.getElementById('reportContent').innerHTML = relatorio;
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('fiscalizacaoForm').style.display = 'none';
+                
                 window.scrollTo({top: 0, behavior: 'smooth'});
                 
                 mostrarNotificacao('✅ Relatório gerado com sucesso!', 'success');
-                console.log('Relatório gerado com sucesso!');
                 
             } catch (error) {
                 console.error('Erro ao gerar relatório:', error);
-                mostrarNotificacao('❌ Erro ao gerar relatório: ' + error.message, 'error');
+                mostrarNotificacao('❌ Erro ao gerar relatório', 'error');
             }
         }
 
-        // Voltar ao formulário
         function voltarFormulario() {
-            console.log('Voltando ao formulário...');
-            
-            const reportSection = document.getElementById('reportSection');
-            const formElement = document.getElementById('fiscalizacaoForm');
-            const actionButtons = document.querySelector('.action-buttons');
-            
-            if (reportSection) {
-                reportSection.style.display = 'none';
-                console.log('Relatório escondido');
-            }
-            
-            if (formElement) {
-                formElement.style.display = 'block';
-                formElement.style.visibility = 'visible';
-                console.log('Formulário mostrado');
-            }
-            
-            if (actionButtons) {
-                actionButtons.style.display = 'flex';
-                console.log('Botões do formulário mostrados');
-            }
-            
+            document.getElementById('reportSection').style.display = 'none';
+            document.getElementById('fiscalizacaoForm').style.display = 'block';
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        // Imprimir relatório (funciona 100%)
         function imprimirRelatorio() {
             try {
-                // Criar uma nova janela com o relatório
                 const conteudo = document.getElementById('reportContent').innerHTML;
-                const janelaImpressao = window.open('', '_blank', 'width=800,height=600');
+                
+                if (!conteudo || conteudo.trim() === '') {
+                    mostrarNotificacao('❌ Gere o relatório primeiro!', 'error');
+                    return;
+                }
+                
+                const janelaImpressao = window.open('', '_blank', 'width=900,height=700');
                 
                 janelaImpressao.document.write(`
                     <!DOCTYPE html>
@@ -1061,70 +645,38 @@
                         <title>Relatório CAS-DF - ${numeroDocumento}</title>
                         <meta charset="UTF-8">
                         <style>
-                            body { 
-                                font-family: Arial, sans-serif; 
-                                margin: 20px; 
-                                line-height: 1.4;
-                                color: #333;
-                            }
-                            h2, h3 { 
-                                color: #1e3c72; 
-                                page-break-after: avoid;
-                            }
-                            h3 {
-                                border-bottom: 1px solid #ccc;
-                                padding-bottom: 5px;
-                                margin-top: 20px;
-                            }
-                            .signature-section {
-                                background: #f0fff4 !important;
-                                border: 2px solid #48bb78 !important;
-                                padding: 15px;
-                                border-radius: 8px;
-                                margin: 20px 0;
-                                page-break-inside: avoid;
-                            }
-                            ul {
-                                margin: 10px 0;
-                                padding-left: 20px;
-                            }
-                            li {
-                                margin-bottom: 5px;
-                            }
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.5; color: #333; }
+                            h1, h2, h3 { color: #1e3c72; page-break-after: avoid; }
+                            p { margin: 8px 0; }
+                            ul { margin: 10px 0; padding-left: 25px; }
+                            li { margin-bottom: 6px; }
+                            .controls { position: fixed; top: 10px; right: 10px; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+                            .btn { padding: 8px 15px; margin: 3px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; }
                             @media print { 
-                                body { 
-                                    margin: 0; 
-                                    font-size: 12px;
-                                }
-                                .no-print {
-                                    display: none;
-                                }
-                                h2, h3 {
-                                    color: #000 !important;
-                                }
+                                .controls { display: none; }
+                                body { margin: 0; padding: 15mm; font-size: 12px; }
+                                h1, h2, h3 { color: #000; }
                             }
                         </style>
                     </head>
                     <body>
+                        <div class="controls">
+                            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+                            <button class="btn" onclick="window.close()">❌ Fechar</button>
+                        </div>
                         ${conteudo}
-                        <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; border-top: 1px solid #ccc;">
-                            <p><strong>💡 DICA:</strong> Use Ctrl+P ou Cmd+P para imprimir</p>
-                            <p>Para salvar como PDF: Imprimir → Destino: Salvar como PDF</p>
+                        <div style="margin-top: 40px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #ccc; padding-top: 20px;">
+                            Documento gerado em: ${new Date().toLocaleString('pt-BR')}
                         </div>
                     </body>
                     </html>
                 `);
                 
                 janelaImpressao.document.close();
+                janelaImpressao.focus();
                 
-                // Aguardar carregar e abrir diálogo de impressão
-                janelaImpressao.onload = function() {
-                    setTimeout(() => {
-                        janelaImpressao.print();
-                    }, 500);
-                };
-                
-                mostrarNotificacao('✅ Janela de impressão aberta! Use Ctrl+P ou "Salvar como PDF"', 'success', 6000);
+                mostrarNotificacao('✅ Janela de impressão aberta!', 'success');
                 
             } catch (error) {
                 console.error('Erro ao imprimir:', error);
@@ -1132,10 +684,15 @@
             }
         }
 
-        // Abrir relatório em nova aba (para visualizar/salvar)
         function abrirRelatorioNovaAba() {
             try {
                 const conteudo = document.getElementById('reportContent').innerHTML;
+                
+                if (!conteudo || conteudo.trim() === '') {
+                    mostrarNotificacao('❌ Gere o relatório primeiro!', 'error');
+                    return;
+                }
+                
                 const novaAba = window.open('', '_blank');
                 
                 novaAba.document.write(`
@@ -1145,64 +702,11 @@
                         <title>Relatório CAS-DF - ${numeroDocumento}</title>
                         <meta charset="UTF-8">
                         <style>
-                            body { 
-                                font-family: Arial, sans-serif; 
-                                margin: 40px auto; 
-                                max-width: 800px;
-                                line-height: 1.6;
-                                color: #333;
-                                background: #fff;
-                            }
-                            h2, h3 { 
-                                color: #1e3c72; 
-                            }
-                            h3 {
-                                border-bottom: 2px solid #667eea;
-                                padding-bottom: 8px;
-                                margin-top: 25px;
-                            }
-                            .signature-section {
-                                background: #f0fff4 !important;
-                                border: 2px solid #48bb78 !important;
-                                padding: 20px;
-                                border-radius: 8px;
-                                margin: 25px 0;
-                            }
-                            ul {
-                                margin: 15px 0;
-                                padding-left: 25px;
-                            }
-                            li {
-                                margin-bottom: 8px;
-                            }
-                            .controls {
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background: white;
-                                padding: 15px;
-                                border-radius: 8px;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                                border: 1px solid #ddd;
-                            }
-                            .btn {
-                                display: inline-block;
-                                padding: 8px 16px;
-                                margin: 5px;
-                                background: #667eea;
-                                color: white;
-                                text-decoration: none;
-                                border-radius: 5px;
-                                font-size: 14px;
-                                cursor: pointer;
-                                border: none;
-                            }
-                            .btn:hover {
-                                background: #5a67d8;
-                            }
-                            @media print {
-                                .controls { display: none; }
-                            }
+                            body { font-family: Arial, sans-serif; margin: 40px auto; max-width: 800px; line-height: 1.6; color: #333; padding: 20px; }
+                            h1, h2, h3 { color: #1e3c72; }
+                            .controls { position: fixed; top: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+                            .btn { padding: 10px 16px; margin: 5px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+                            @media print { .controls { display: none; } }
                         </style>
                     </head>
                     <body>
@@ -1223,206 +727,544 @@
                 mostrarNotificacao('❌ Erro ao abrir nova aba', 'error');
             }
         }
-        function imprimirRelatorio() {
-            const conteudo = document.getElementById('reportContent').innerHTML;
-            const janelaImpressao = window.open('', '_blank');
-            
-            janelaImpressao.document.write(`
-                <html>
-                <head>
-                    <title>Relatório CAS-DF</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h2, h3 { color: #333; }
-                        @media print { body { margin: 0; } }
-                    </style>
-                </head>
-                <body>
-                    ${conteudo}
-                </body>
-                </html>
-            `);
-            
-            janelaImpressao.document.close();
-            janelaImpressao.print();
-        }
 
-        // Limpar formulário
         function limparFormulario() {
-            if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
                 document.getElementById('fiscalizacaoForm').reset();
                 assinaturaValida = false;
                 hashDocumento = '';
                 
                 const signatureInfo = document.getElementById('signatureInfo');
-                if (signatureInfo) {
-                    signatureInfo.style.display = 'none';
-                }
+                if (signatureInfo) signatureInfo.style.display = 'none';
                 
                 localStorage.removeItem('cas_rascunho');
                 verificarLiberacao();
                 
-                mostrarNotificacao('🗑️ Formulário limpo com sucesso!', 'info');
+                mostrarNotificacao('🗑️ Formulário limpo!', 'info');
             }
         }
 
-        // Sistema de notificações
         function mostrarNotificacao(mensagem, tipo = 'info', duracao = 4000) {
             const notification = document.getElementById('notification');
-            const icones = {
-                success: '✅', 
-                error: '❌', 
-                info: 'ℹ️',
-                warning: '⚠️'
-            };
+            const icones = { success: '✅', error: '❌', info: 'ℹ️' };
             
             if (notification) {
                 notification.innerHTML = (icones[tipo] || 'ℹ️') + ' ' + mensagem;
                 notification.className = 'notification ' + tipo;
                 notification.classList.add('show');
                 
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, duracao);
+                setTimeout(() => notification.classList.remove('show'), duracao);
             }
         }
 
-        // Carregar rascunho salvo
-        function carregarRascunho() {
-            try {
-                const rascunho = localStorage.getItem('cas_rascunho');
-                if (rascunho) {
-                    const dados = JSON.parse(rascunho);
-                    const form = document.getElementById('fiscalizacaoForm');
-                    
-                    Object.keys(dados).forEach(key => {
-                        const elemento = form.querySelector(`[name="${key}"]`);
-                        if (elemento) {
-                            if (elemento.type === 'checkbox' || elemento.type === 'radio') {
-                                if (elemento.value === dados[key]) {
-                                    elemento.checked = true;
-                                }
-                            } else {
-                                elemento.value = dados[key];
-                            }
-                        }
-                    });
-                    
-                    mostrarNotificacao('📋 Rascunho carregado!', 'info');
-                }
-            } catch (error) {
-                console.error('Erro ao carregar rascunho:', error);
+        // Auto-save a cada 5 minutos
+        setInterval(function() {
+            const nomeEntidade = document.getElementById('nome_entidade');
+            if (nomeEntidade && nomeEntidade.value.trim()) {
+                salvarRascunho();
             }
-        }
+        }, 300000);
 
         // Atalhos de teclado
         document.addEventListener('keydown', function(event) {
-            // Ctrl+S para salvar
             if (event.ctrlKey && event.key === 's') {
                 event.preventDefault();
                 salvarRascunho();
             }
-            
-            // Ctrl+Enter para validar
-            if (event.ctrlKey && event.key === 'Enter') {
-                event.preventDefault();
-                validarFormulario();
-            }
-            
-            // F9 para limpar (com confirmação)
-            if (event.key === 'F9') {
-                event.preventDefault();
-                limparFormulario();
-            }
         });
 
-        // Auto-save periódico
-        setInterval(function() {
-            const form = document.getElementById('fiscalizacaoForm');
-            const dados = new FormData(form);
-            let temDados = false;
-            
-            for (let [key, value] of dados.entries()) {
-                if (value.trim()) {
-                    temDados = true;
-                    break;
-                }
-            }
-            
-            if (temDados) {
-                salvarRascunho();
-            }
-        }, 300000); // Auto-save a cada 5 minutos
-
-        // Prevenir perda de dados
-        window.addEventListener('beforeunload', function(e) {
-            if (assinaturaValida || document.getElementById('nome_entidade').value.trim()) {
-                e.returnValue = 'Você tem dados não salvos. Tem certeza que deseja sair?';
-                return e.returnValue;
-            }
-        });
-
-        // Validação em tempo real
-        document.addEventListener('input', function(e) {
-            if (e.target.required && e.target.value.trim()) {
-                e.target.style.borderColor = '#48bb78';
-            } else if (e.target.required) {
-                e.target.style.borderColor = '#f56565';
-            }
-        });
-
-        // Melhorar UX dos radio buttons
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Remover destaque de outros radios do mesmo grupo
-                document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
-                    r.parentElement.style.backgroundColor = '';
-                });
-                
-                // Destacar o selecionado
-                this.parentElement.style.backgroundColor = '#e6fffa';
-            });
-        });
-
-        // Adicionar botão para carregar rascunho
-        window.addEventListener('load', function() {
-            if (localStorage.getItem('cas_rascunho')) {
-                setTimeout(() => {
-                    if (confirm('Foi encontrado um rascunho salvo. Deseja carregá-lo?')) {
-                        carregarRascunho();
-                    }
-                }, 1000);
-            }
-        });
-
-        // Debug e logging para ajudar com troubleshooting
-        window.CAS_DEBUG = {
-            verificarEstado: function() {
-                console.log('Estado do sistema:', {
-                    assinaturaValida: assinaturaValida,
-                    hashDocumento: hashDocumento,
-                    numeroDocumento: numeroDocumento,
-                    btnRelatorioDisabled: document.getElementById('btnRelatorio').disabled,
-                    declaracaoChecked: document.getElementById('declaracao_veracidade').checked
-                });
-            },
-            
-            forcarAssinatura: function() {
-                assinaturaValida = true;
-                verificarLiberacao();
-                console.log('Assinatura forçada para debug');
-            },
-            
-            resetarSistema: function() {
-                assinaturaValida = false;
-                hashDocumento = '';
-                document.getElementById('signatureInfo').style.display = 'none';
-                verificarLiberacao();
-                console.log('Sistema resetado');
-            }
-        };
-
-        console.log('Sistema CAS-DF carregado. Use CAS_DEBUG para troubleshooting.');
+        console.log('✅ Sistema CAS-DF carregado com sucesso! Todas as funcionalidades ativas.');
     </script>
 </body>
-</html>
+</html>📄 1. DOCUMENTOS DISPONIBILIZADOS</h3>';
+                    if (formulario.pareceres_tecnicos) relatorio += '<p><strong>Parecer(s) Técnico(s) nº:</strong> ' + formulario.pareceres_tecnicos + '</p>';
+                    if (formulario.notas_tecnicas) relatorio += '<p><strong>Nota(s) Técnica(s) nº:</strong> ' + formulario.notas_tecnicas + '</p>';
+                    if (formulario.plano_acao_ano) relatorio += '<p><strong>Plano de Ação Ano:</strong> ' + formulario.plano_acao_ano + '</p>';
+                    if (formulario.relatorio_atividades_ano) relatorio += '<p><strong>Relatório de Atividades Ano:</strong> ' + formulario.relatorio_atividades_ano + '</p>';
+                    relatorio += '</div>';
+                }
+                
+                // 2. Dados da Entidade
+                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #48bb78;">';
+                relatorio += '<h3 style="color: #2d3748; margin-top: 0;">📋 2. DADOS DA ENTIDADE</h3>';
+                relatorio += '<p><strong>Entidade:</strong> ' + (formulario.nome_entidade || 'Não informado') + '</p>';
+                relatorio += '<p><strong>CNPJ:</strong> ' + (formulario.cnpj_entidade || 'Não informado') + '</p>';
+                relatorio += '</div>';
+                
+                // 3. Dados da Visita
+                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #f56565;">';
+                relatorio += '<h3 style="color: #2d3748; margin-top: 0;">🏢 3. DADOS DA VISITA</h3>';
+                relatorio += '<p><strong>Data:</strong> ' + (formulario.data_visita ? new Date(formulario.data_visita + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não informado') + '</p>';
+                relatorio += '<p><strong>Horário:</strong> ' + (formulario.horario_visita || 'Não informado') + '</p>';
+                relatorio += '<p><strong>Responsável:</strong> ' + (formulario.nome_recebeu || 'Não informado') + ' - ' + (formulario.funcao_recebeu || 'Não informado') + '</p>';
+                
+                if (formulario.endereco_1) {
+                    relatorio += '<p><strong>Endereço 1:</strong> ' + formulario.endereco_1;
+                    if (formulario.licenca_1) relatorio += ' | Licença: ' + (formulario.licenca_1 === 'sim' ? 'Sim' : 'Não');
+                    relatorio += '</p>';
+                }
+                if (formulario.endereco_2) {
+                    relatorio += '<p><strong>Endereço 2:</strong> ' + formulario.endereco_2;
+                    if (formulario.licenca_2) relatorio += ' | Licença: ' + (formulario.licenca_2 === 'sim' ? 'Sim' : 'Não');
+                    relatorio += '</p>';
+                }
+                
+                // Público-alvo
+                let publicoInfo = [];
+                if (formulario.cdi_idosos) publicoInfo.push('Idosos (CDI/DF): ' + (formulario.cdi_idosos === 'sim' ? 'Sim' : 'Não'));
+                if (formulario.cdca_criancas) publicoInfo.push('Crianças/Adolescentes (CDCA/DF): ' + (formulario.cdca_criancas === 'sim' ? 'Sim' : 'Não'));
+                if (formulario.cdi_familias) publicoInfo.push('Famílias (CDI/DF): ' + (formulario.cdi_familias === 'sim' ? 'Sim' : 'Não'));
+                if (formulario.cdca_familias) publicoInfo.push('Famílias (CDCA/DF): ' + (formulario.cdca_familias === 'sim' ? 'Sim' : 'Não'));
+                
+                if (publicoInfo.length > 0) {
+                    relatorio += '<h4>Público-alvo:</h4>';
+                    publicoInfo.forEach(info => relatorio += '<p>• ' + info + '</p>');
+                }
+                
+                // Recursos humanos
+                if (formulario.num_voluntarios || formulario.num_contratados) {
+                    relatorio += '<h4>Recursos Humanos:</h4>';
+                    if (formulario.num_voluntarios) relatorio += '<p>• Voluntários: ' + formulario.num_voluntarios + '</p>';
+                    if (formulario.num_contratados) relatorio += '<p>• Contratados: ' + formulario.num_contratados + '</p>';
+                }
+                
+                relatorio += '</div>';
+                
+                // 4. Serviços Analisados
+                if (servicos.length > 0) {
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #9f7aea;">';
+                    relatorio += '<h3 style="color: #2d3748; margin-top: 0;"><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema CAS-DF - Relatório de Fiscalização</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        .content { padding: 40px; }
+        .form-section { margin-bottom: 40px; padding: 25px; border: 2px solid #e1e8ed; border-radius: 15px; background: #f8fafc; }
+        .form-section h3 { color: #2d3748; margin-bottom: 20px; font-size: 1.4em; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; transition: all 0.3s ease; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .btn { padding: 15px 30px; border: none; border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-secondary { background: #e2e8f0; color: #4a5568; }
+        .btn-success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; }
+        .action-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
+        .checkbox-item { display: flex; align-items: flex-start; padding: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 10px; }
+        .checkbox-item input { width: auto; margin-right: 10px; transform: scale(1.2); }
+        .radio-group { display: flex; gap: 20px; margin: 10px 0; flex-wrap: wrap; }
+        .radio-group label { display: flex; align-items: center; margin-bottom: 0; }
+        .table-container { overflow-x: auto; margin: 20px 0; }
+        .form-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        .form-table th, .form-table td { border: 1px solid #e2e8f0; padding: 12px 8px; text-align: center; vertical-align: middle; }
+        .form-table th { background: #f7fafc; font-weight: 600; color: #2d3748; }
+        .form-table td:first-child { text-align: left; font-weight: 500; }
+        .endereco-container { background: white; padding: 20px; border-radius: 10px; border: 2px solid #e2e8f0; margin-top: 10px; }
+        .endereco-linha { display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: start; margin: 20px 0; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
+        .endereco-numero { font-weight: 600; font-size: 16px; color: #4a5568; min-width: 25px; padding-top: 8px; }
+        .endereco-input { width: 100%; border: none; border-bottom: 2px solid #e2e8f0; background: transparent; padding: 10px 5px; font-size: 15px; }
+        .licenca-group { display: flex; flex-direction: column; gap: 8px; min-width: 180px; }
+        .licenca-label { font-size: 12px; font-weight: 600; color: #4a5568; }
+        .licenca-options { display: flex; gap: 15px; }
+        .radio-inline { display: flex; align-items: center; gap: 5px; font-size: 14px; margin: 0; cursor: pointer; }
+        .articulacao-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+        .articulacao-table th, .articulacao-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: center; }
+        .articulacao-table td:first-child { text-align: left; font-weight: 500; background: #f9f9f9; }
+        .articulacao-table input[type="text"] { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 12px; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 600; z-index: 1001; opacity: 0; transform: translateX(100%); transition: all 0.3s ease; max-width: 400px; }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
+        .notification.error { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); }
+        .notification.info { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
+        .correcao-badge { display: inline-block; background: #48bb78; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-left: 10px; }
+        .assinatura-section { border: 3px solid #f56565; background: #fef5e7; }
+        .signature-info { display: none; margin-top: 20px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 10px; }
+        .voto-options { margin: 15px 0; }
+        .voto-options > div { margin-bottom: 10px; padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; }
+        @media (max-width: 768px) {
+            .endereco-linha { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h1>
+            <p>SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF - CEP 70.770-502</p>
+            <p>E-mail: Cas_df@sedes.df.gov.br</p>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 10px;">
+                <strong>✅ SISTEMA COMPLETO - VERSÃO FINAL</strong>
+            </div>
+        </div>
+
+        <div class="content">
+            <form id="fiscalizacaoForm">
+                <!-- SERVIÇOS ANALISADOS -->
+                <div class="form-section">
+                    <h3>📋 Este voto analisará o seguinte serviço: <span class="correcao-badge">FICHA OFICIAL</span></h3>
+                    <div style="background: white; padding: 20px; border-radius: 10px;">
+                        <p style="margin-bottom: 15px; font-weight: 600;">Marque a(s) opção(ões) correspondente(s):</p>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="acoes_assessoramento" name="tipoServico" value="1. Ações de Assessoramento">
+                                <label for="acoes_assessoramento">1. Ações de Assessoramento</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="acoes_defesa" name="tipoServico" value="2. Ações de Defesa e Garantia de Direitos">
+                                <label for="acoes_defesa">2. Ações de Defesa e Garantia de Direitos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="promocao_integracao" name="tipoServico" value="3. Promoção da integração ao mundo do trabalho">
+                                <label for="promocao_integracao">3. Promoção da integração ao mundo do trabalho</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="servico_convivencia" name="tipoServico" value="4. Serviço de Convivência e Fortalecimento de Vínculos">
+                                <label for="servico_convivencia">4. Serviço de Convivência e Fortalecimento de Vínculos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="servico_protecao_5" name="tipoServico" value="5. Serviço de Proteção e Atendimento Especializado a Famílias e Indivíduos">
+                                <label for="servico_protecao_5">5. Serviço de Proteção e Atendimento Especializado a Famílias e Indivíduos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="servico_protecao_6" name="tipoServico" value="6. Serviço de Proteção e Atendimento Especializado a Mulheres">
+                                <label for="servico_protecao_6">6. Serviço de Proteção e Atendimento Especializado a Mulheres</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="servico_medidas_7" name="tipoServico" value="7. Serviço de Proteção Social a Adolescentes em Cumprimento de Medida Socioeducativa">
+                                <label for="servico_medidas_7">7. Serviço de Proteção Social a Adolescentes em Cumprimento de Medida Socioeducativa</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="abordagem_social" name="tipoServico" value="8. Serviço de Abordagem Social">
+                                <label for="abordagem_social">8. Serviço de Abordagem Social</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="acolhimento" name="tipoServico" value="9. Serviço de Acolhimento">
+                                <label for="acolhimento">9. Serviço de Acolhimento</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. DOCUMENTOS DISPONIBILIZADOS -->
+                <div class="form-section">
+                    <h3>📄 1. DOCUMENTOS DISPONIBILIZADOS:</h3>
+                    <div class="form-group">
+                        <label for="pareceres_tecnicos">Parecer(s) Técnico(s) nº:</label>
+                        <input type="text" id="pareceres_tecnicos" name="pareceres_tecnicos">
+                    </div>
+                    <div class="form-group">
+                        <label for="notas_tecnicas">Nota(s) Técnica(s) nº:</label>
+                        <input type="text" id="notas_tecnicas" name="notas_tecnicas">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plano_acao_ano">Plano de Ação Ano:</label>
+                            <input type="number" id="plano_acao_ano" name="plano_acao_ano" min="2020" max="2030">
+                        </div>
+                        <div class="form-group">
+                            <label for="relatorio_atividades_ano">Relatório de Atividades Ano:</label>
+                            <input type="number" id="relatorio_atividades_ano" name="relatorio_atividades_ano" min="2020" max="2030">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DA VISITA -->
+                <div class="form-section">
+                    <h3>🏢 2. DA VISITA</h3>
+
+                    <!-- Dados da Entidade -->
+                    <div class="form-group">
+                        <label style="font-size: 1.1em; color: white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 15px; border-radius: 8px; display: inline-block; margin-bottom: 20px;">📋 Dados da Entidade Visitada:</label>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nome_entidade">Nome da Entidade:</label>
+                                <input type="text" id="nome_entidade" name="nome_entidade" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cnpj_entidade">CNPJ:</label>
+                                <input type="text" id="cnpj_entidade" name="cnpj_entidade" maxlength="18" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="data_visita">2.1. Data:</label>
+                            <input type="date" id="data_visita" name="data_visita" required>
+                        </div>
+                        <div class="form-group">
+                            <label>2.2. Horário:</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="horario_visita" value="matutino"> matutino</label>
+                                <label><input type="radio" name="horario_visita" value="vespertino"> vespertino</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome_recebeu">2.3. Nome de quem recebeu o conselheiro:</label>
+                            <input type="text" id="nome_recebeu" name="nome_recebeu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="funcao_recebeu">Função:</label>
+                            <input type="text" id="funcao_recebeu" name="funcao_recebeu" required>
+                        </div>
+                    </div>
+
+                    <!-- 2.4. Endereços -->
+                    <div class="form-group">
+                        <label>2.4. Endereço(s) visitado(s):</label>
+                        <div class="endereco-container">
+                            <div class="endereco-linha">
+                                <div class="endereco-numero">1:</div>
+                                <div>
+                                    <input type="text" name="endereco_1" class="endereco-input" placeholder="Endereço completo" required>
+                                </div>
+                                <div class="licenca-group">
+                                    <span class="licenca-label">Licença de Funcionamento:</span>
+                                    <div class="licenca-options">
+                                        <label class="radio-inline"><input type="radio" name="licenca_1" value="sim"> Sim</label>
+                                        <label class="radio-inline"><input type="radio" name="licenca_1" value="nao"> Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="endereco-linha">
+                                <div class="endereco-numero">2:</div>
+                                <div>
+                                    <input type="text" name="endereco_2" class="endereco-input" placeholder="Endereço completo (se houver)">
+                                </div>
+                                <div class="licenca-group">
+                                    <span class="licenca-label">Licença de Funcionamento:</span>
+                                    <div class="licenca-options">
+                                        <label class="radio-inline"><input type="radio" name="licenca_2" value="sim"> Sim</label>
+                                        <label class="radio-inline"><input type="radio" name="licenca_2" value="nao"> Não</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2.5. Público-alvo -->
+                    <div class="form-group">
+                        <label>2.5. Público-alvo:</label>
+                        <div class="table-container">
+                            <table class="form-table">
+                                <thead>
+                                    <tr>
+                                        <th>Público</th>
+                                        <th>CDI/DF</th>
+                                        <th>CDCA/DF</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Pessoas idosas (mais de 60 anos)</td>
+                                        <td>
+                                            <label><input type="radio" name="cdi_idosos" value="sim"> sim</label>
+                                            <label><input type="radio" name="cdi_idosos" value="nao"> não</label>
+                                        </td>
+                                        <td>não se aplica</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Crianças e adolescentes (até 18 anos)</td>
+                                        <td>não se aplica</td>
+                                        <td>
+                                            <label><input type="radio" name="cdca_criancas" value="sim"> sim</label>
+                                            <label><input type="radio" name="cdca_criancas" value="nao"> não</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Famílias</td>
+                                        <td>
+                                            <label><input type="radio" name="cdi_familias" value="sim"> sim</label>
+                                            <label><input type="radio" name="cdi_familias" value="nao"> não</label>
+                                        </td>
+                                        <td>
+                                            <label><input type="radio" name="cdca_familias" value="sim"> sim</label>
+                                            <label><input type="radio" name="cdca_familias" value="nao"> não</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Adultos (entre 18 a 59 anos)</td>
+                                        <td>não se aplica</td>
+                                        <td>não se aplica</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2.6. Formas de acesso -->
+                    <div class="form-group">
+                        <label>2.6. Formas de acesso dos usuários:</label>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Procura espontânea">
+                                <label>Procura espontânea</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Busca ativa">
+                                <label>Busca ativa</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Encaminhamento CRAS">
+                                <label>Encaminhamento CRAS</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Encaminhamento CREAS">
+                                <label>Encaminhamento CREAS</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Encaminhamento Conselho Tutelar">
+                                <label>Encaminhamento Conselho Tutelar</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="formasAcesso" value="Encaminhamento Poder Judiciário">
+                                <label>Encaminhamento Poder Judiciário</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2.7. Recursos humanos -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="num_voluntarios">2.7. Nº de voluntários:</label>
+                            <input type="number" id="num_voluntarios" name="num_voluntarios" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="num_contratados">Nº de contratados:</label>
+                            <input type="number" id="num_contratados" name="num_contratados" min="0">
+                        </div>
+                    </div>
+
+                    <!-- 2.8. Especialidades -->
+                    <div class="form-group">
+                        <label>2.8. Especialidades que atuam na oferta socioassistencial:</label>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="assistente social">
+                                <label>assistente social</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="psicólogo">
+                                <label>psicólogo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="pedagogo">
+                                <label>pedagogo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="terapeuta ocupacional">
+                                <label>terapeuta ocupacional</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="profissional do direito">
+                                <label>profissional do direito</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="cuidador social">
+                                <label>cuidador social (nível médio)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="auxiliar administrativo">
+                                <label>auxiliar administrativo (nível médio)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="especialidades" value="agente social">
+                                <label>agente social (nível médio)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="outras_especialidades">outros:</label>
+                            <input type="text" id="outras_especialidades" name="outras_especialidades" placeholder="Especifique outras especialidades">
+                        </div>
+                    </div>
+
+                    <!-- 2.9. Infraestrutura -->
+                    <div class="form-group">
+                        <label>2.9. Infraestrutura:</label>
+                        
+                        <div class="form-group">
+                            <label>a) O Espaço é:</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="tipo_espaco" value="próprio"> próprio</label>
+                                <label><input type="radio" name="tipo_espaco" value="alugado"> alugado</label>
+                                <label><input type="radio" name="tipo_espaco" value="cedido"> cedido</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>b) Atende aos critérios de acessibilidade?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="acessibilidade" value="sim"> sim</label>
+                                <label><input type="radio" name="acessibilidade" value="nao"> não</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="obs_acessibilidade">Observações:</label>
+                                <textarea id="obs_acessibilidade" name="obs_acessibilidade" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>c) Compartilha o espaço com outros serviços?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="compartilha_espaco" value="sim"> sim</label>
+                                <label><input type="radio" name="compartilha_espaco" value="nao"> não</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="obs_compartilhamento">Observações:</label>
+                                <textarea id="obs_compartilhamento" name="obs_compartilhamento" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>d) O espaço atende de forma satisfatória a execução da oferta socioassistencial?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="espaco_satisfatorio" value="sim"> sim</label>
+                                <label><input type="radio" name="espaco_satisfatorio" value="nao"> não</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="obs_espaco">Observações:</label>
+                                <textarea id="obs_espaco" name="obs_espaco" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2.10. Do caráter contínuo e permanente -->
+                    <div class="form-group">
+                        <label>2.10. Do caráter contínuo e permanente:</label>
+                        
+                        <div class="form-group">
+                            <label>a) Possui atividades de Dezembro a Dezembro?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="atividades_continuas" value="sim"> sim</label>
+                                <label><input type="radio" name="atividades_continuas" value="nao"> não</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>b) Possui recesso/férias coletivas?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="recesso_ferias" value="sim"> sim</label>
+                                <label><input type="radio" name="recesso_ferias" value="nao"> não</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2.11. Ações gratuitas -->
