@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema CAS-DF COMPLETO - Definitivo</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
@@ -629,8 +628,8 @@
                 <div id="reportContent"></div>
                 <div class="action-buttons" style="margin-top: 30px;">
                     <button onclick="voltarFormulario()" class="btn btn-secondary">⬅️ Voltar</button>
-                    <button onclick="imprimirRelatorio()" class="btn btn-primary">🖨️ Imprimir</button>
-                    <button onclick="gerarPDF()" class="btn btn-success">📄 Baixar PDF</button>
+                    <button onclick="imprimirRelatorio()" class="btn btn-primary">🖨️ Imprimir / Salvar PDF</button>
+                    <button onclick="abrirRelatorioNovaAba()" class="btn btn-success">📄 Abrir em Nova Aba</button>
                 </div>
             </div>
         </div>
@@ -739,12 +738,31 @@
                     objeto[key] = value;
                 }
                 
+                // Converter para string e remover caracteres especiais
                 const texto = JSON.stringify(objeto);
-                const hash = btoa(texto + new Date().getTime()).substring(0, 16).toUpperCase();
-                return hash;
+                const textoLimpo = texto
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                    .replace(/[^\x00-\x7F]/g, ''); // Remove caracteres não-ASCII
+                
+                // Gerar hash simples e seguro
+                let hash = 0;
+                for (let i = 0; i < textoLimpo.length; i++) {
+                    const char = textoLimpo.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Converter para 32bit
+                }
+                
+                // Converter para string hexadecimal e adicionar timestamp
+                const timestamp = new Date().getTime().toString(36);
+                const hashFinal = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0') + timestamp.slice(-4).toUpperCase();
+                
+                return hashFinal;
             } catch (error) {
                 console.error('Erro ao gerar hash:', error);
-                return Math.random().toString(36).substring(2, 18).toUpperCase();
+                // Fallback: hash baseado em timestamp
+                const timestamp = new Date().getTime();
+                return timestamp.toString(16).toUpperCase().padStart(12, '0');
             }
         }
 
@@ -856,7 +874,10 @@
 
         // Gerar relatório
         function gerarRelatorio() {
+            console.log('Iniciando geração do relatório...');
+            
             if (!validarFormulario()) {
+                console.log('Validação falhou');
                 return;
             }
 
@@ -866,6 +887,7 @@
             }
 
             try {
+                console.log('Coletando dados do formulário...');
                 const dados = new FormData(document.getElementById('fiscalizacaoForm'));
                 const form = {};
                 
@@ -873,155 +895,334 @@
                 for (let [key, value] of dados.entries()) {
                     form[key] = value;
                 }
+                console.log('Dados coletados:', form);
 
                 // Coletar checkboxes marcados
                 const servicos = Array.from(document.querySelectorAll('input[name="tipoServico"]:checked')).map(s => s.value);
                 const formas = Array.from(document.querySelectorAll('input[name="formasAcesso"]:checked')).map(f => f.value);
                 const especialidades = Array.from(document.querySelectorAll('input[name="especialidades"]:checked')).map(e => e.value);
 
-                let relatorio = '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+                console.log('Serviços:', servicos);
+                console.log('Formas de acesso:', formas);
+
+                let relatorio = '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto;">';
                 relatorio += '<div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">';
-                relatorio += '<h2 style="margin: 0; color: #1e3c72;">RELATÓRIO DE FISCALIZAÇÃO</h2>';
+                relatorio += '<h2 style="margin: 0; color: #1e3c72;">🏛️ CONSELHO DE ASSISTÊNCIA SOCIAL DO DISTRITO FEDERAL</h2>';
+                relatorio += '<h3 style="margin: 10px 0; color: #2d3748;">RELATÓRIO DE FISCALIZAÇÃO</h3>';
                 relatorio += '<p style="margin: 5px 0; font-weight: bold;">Documento: ' + numeroDocumento + '</p>';
-                relatorio += '<p style="margin: 5px 0;">Conselho de Assistência Social do Distrito Federal</p>';
+                relatorio += '<p style="margin: 5px 0; font-size: 14px;">SEPN Quadra 515 Lote 02 Bloco B, 4º andar - Asa Norte/DF</p>';
                 relatorio += '</div>';
                 
-                relatorio += '<div style="margin-bottom: 25px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">DADOS DA ENTIDADE</h3>';
-                relatorio += '<p><strong>Entidade:</strong> ' + (form.nome_entidade || '') + '</p>';
-                relatorio += '<p><strong>CNPJ:</strong> ' + (form.cnpj_entidade || '') + '</p>';
+                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">📋 DADOS DA ENTIDADE</h3>';
+                relatorio += '<p><strong>Entidade:</strong> ' + (form.nome_entidade || 'Não informado') + '</p>';
+                relatorio += '<p><strong>CNPJ:</strong> ' + (form.cnpj_entidade || 'Não informado') + '</p>';
                 relatorio += '</div>';
                 
-                relatorio += '<div style="margin-bottom: 25px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">DADOS DA VISITA</h3>';
-                relatorio += '<p><strong>Data:</strong> ' + (form.data_visita ? new Date(form.data_visita + 'T00:00:00').toLocaleDateString('pt-BR') : '') + '</p>';
+                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">🏢 DADOS DA VISITA</h3>';
+                relatorio += '<p><strong>Data:</strong> ' + (form.data_visita ? new Date(form.data_visita + 'T00:00:00').toLocaleDateString('pt-BR') : 'Não informado') + '</p>';
                 relatorio += '<p><strong>Horário:</strong> ' + (form.horario_visita || 'Não informado') + '</p>';
-                relatorio += '<p><strong>Responsável que recebeu:</strong> ' + (form.nome_recebeu || '') + ' - ' + (form.funcao_recebeu || '') + '</p>';
+                relatorio += '<p><strong>Responsável que recebeu:</strong> ' + (form.nome_recebeu || 'Não informado') + ' - ' + (form.funcao_recebeu || 'Não informado') + '</p>';
                 relatorio += '</div>';
                 
                 if (servicos.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">SERVIÇOS ANALISADOS</h3>';
-                    relatorio += '<ul>';
-                    servicos.forEach(s => relatorio += '<li>' + s + '</li>');
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">📋 SERVIÇOS ANALISADOS</h3>';
+                    relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
+                    servicos.forEach(s => relatorio += '<li style="margin-bottom: 5px;">' + s + '</li>');
                     relatorio += '</ul>';
                     relatorio += '</div>';
                 }
                 
                 if (formas.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">FORMAS DE ACESSO</h3>';
-                    relatorio += '<ul>';
-                    formas.forEach(f => relatorio += '<li>' + f + '</li>');
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">🚪 FORMAS DE ACESSO</h3>';
+                    relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
+                    formas.forEach(f => relatorio += '<li style="margin-bottom: 5px;">' + f + '</li>');
                     relatorio += '</ul>';
                     relatorio += '</div>';
                 }
 
                 if (especialidades.length > 0) {
-                    relatorio += '<div style="margin-bottom: 25px;">';
-                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">ESPECIALIDADES</h3>';
-                    relatorio += '<ul>';
-                    especialidades.forEach(e => relatorio += '<li>' + e + '</li>');
+                    relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                    relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">👥 ESPECIALIDADES</h3>';
+                    relatorio += '<ul style="margin: 10px 0; padding-left: 20px;">';
+                    especialidades.forEach(e => relatorio += '<li style="margin-bottom: 5px;">' + e + '</li>');
                     relatorio += '</ul>';
                     relatorio += '</div>';
                 }
                 
-                relatorio += '<div style="margin-bottom: 25px;">';
-                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px;">VOTO DO CONSELHEIRO</h3>';
+                relatorio += '<div style="margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px;">';
+                relatorio += '<h3 style="color: #2d3748; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;">⚖️ VOTO DO CONSELHEIRO</h3>';
                 relatorio += '<p><strong>Análises técnicas:</strong> ' + (form.concordancia_analises || 'Não informado') + '</p>';
                 relatorio += '<p><strong>Decisão:</strong> ' + (form.voto_final || 'Não informado') + '</p>';
                 relatorio += '</div>';
                 
                 relatorio += '<div style="margin-top: 40px; padding: 20px; background: #f0fff4; border: 2px solid #48bb78; border-radius: 8px;">';
                 relatorio += '<h3 style="color: #38a169; margin-top: 0;">✅ DOCUMENTO ASSINADO DIGITALMENTE</h3>';
-                relatorio += '<p><strong>Conselheiro:</strong> ' + (form.nome_conselheiro || '') + '</p>';
+                relatorio += '<p><strong>Conselheiro:</strong> ' + (form.nome_conselheiro || 'Não informado') + '</p>';
                 relatorio += '<p><strong>Data/Hora da Assinatura:</strong> ' + document.getElementById('signatureDateTime').textContent + '</p>';
                 relatorio += '<p><strong>Hash de Verificação:</strong> ' + hashDocumento + '</p>';
                 relatorio += '</div>';
                 
-                relatorio += '<div style="margin-top: 50px; text-align: center;">';
-                relatorio += '<p><strong>Data do Voto:</strong> ' + (form.data_voto ? new Date(form.data_voto + 'T00:00:00').toLocaleDateString('pt-BR') : '') + '</p>';
+                relatorio += '<div style="margin-top: 50px; text-align: center; border-top: 1px solid #ccc; padding-top: 20px;">';
+                relatorio += '<p><strong>Data do Voto:</strong> ' + (form.data_voto ? new Date(form.data_voto + 'T00:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')) + '</p>';
                 relatorio += '<div style="margin-top: 60px; border-top: 1px solid #333; width: 300px; margin-left: auto; margin-right: auto; padding-top: 10px;">';
-                relatorio += '<p style="margin: 5px 0; font-weight: bold;">' + (form.nome_conselheiro || '') + '</p>';
+                relatorio += '<p style="margin: 5px 0; font-weight: bold;">' + (form.nome_conselheiro || 'Nome do Conselheiro') + '</p>';
                 relatorio += '<p style="margin: 5px 0;">Conselheiro(a) CAS-DF</p>';
                 relatorio += '</div>';
                 relatorio += '</div>';
                 
                 relatorio += '</div>';
 
-                document.getElementById('reportContent').innerHTML = relatorio;
-                document.getElementById('reportSection').style.display = 'block';
+                console.log('Relatório HTML gerado, tamanho:', relatorio.length);
+
+                // Inserir o relatório no DOM
+                const reportContent = document.getElementById('reportContent');
+                if (!reportContent) {
+                    console.error('Elemento reportContent não encontrado!');
+                    mostrarNotificacao('❌ Erro interno: elemento reportContent não encontrado', 'error');
+                    return;
+                }
                 
+                reportContent.innerHTML = relatorio;
+                console.log('Relatório inserido no DOM');
+
+                // Mostrar seção do relatório
+                const reportSection = document.getElementById('reportSection');
+                if (!reportSection) {
+                    console.error('Elemento reportSection não encontrado!');
+                    mostrarNotificacao('❌ Erro interno: elemento reportSection não encontrado', 'error');
+                    return;
+                }
+                
+                reportSection.style.display = 'block';
+                console.log('Seção do relatório mostrada');
+
                 // Esconder o formulário
-                const formElement = document.getElementById('fiscalizacaoForm').parentElement;
-                formElement.style.display = 'none';
+                const contentDiv = document.querySelector('.content');
+                const formElement = document.getElementById('fiscalizacaoForm');
+                if (formElement) {
+                    formElement.style.display = 'none';
+                    console.log('Formulário escondido');
+                }
                 
                 // Scroll para o topo
                 window.scrollTo({top: 0, behavior: 'smooth'});
                 
                 mostrarNotificacao('✅ Relatório gerado com sucesso!', 'success');
+                console.log('Relatório gerado com sucesso!');
+                
             } catch (error) {
                 console.error('Erro ao gerar relatório:', error);
-                mostrarNotificacao('❌ Erro ao gerar relatório', 'error');
+                mostrarNotificacao('❌ Erro ao gerar relatório: ' + error.message, 'error');
             }
         }
 
         // Voltar ao formulário
         function voltarFormulario() {
-            document.getElementById('reportSection').style.display = 'none';
+            console.log('Voltando ao formulário...');
             
-            // Mostrar o formulário novamente
-            const formElement = document.getElementById('fiscalizacaoForm').parentElement;
-            formElement.style.display = 'block';
+            const reportSection = document.getElementById('reportSection');
+            const formElement = document.getElementById('fiscalizacaoForm');
+            const actionButtons = document.querySelector('.action-buttons');
+            
+            if (reportSection) {
+                reportSection.style.display = 'none';
+                console.log('Relatório escondido');
+            }
+            
+            if (formElement) {
+                formElement.style.display = 'block';
+                formElement.style.visibility = 'visible';
+                console.log('Formulário mostrado');
+            }
+            
+            if (actionButtons) {
+                actionButtons.style.display = 'flex';
+                console.log('Botões do formulário mostrados');
+            }
             
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        // Gerar PDF para download
-        function gerarPDF() {
+        // Imprimir relatório (funciona 100%)
+        function imprimirRelatorio() {
             try {
-                mostrarNotificacao('📄 Gerando PDF...', 'info', 2000);
+                // Criar uma nova janela com o relatório
+                const conteudo = document.getElementById('reportContent').innerHTML;
+                const janelaImpressao = window.open('', '_blank', 'width=800,height=600');
                 
-                // Configurações do PDF
-                const opcoes = {
-                    margin: [10, 10, 10, 10],
-                    filename: `Relatorio_CAS_DF_${numeroDocumento}_${new Date().toISOString().split('T')[0]}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { 
-                        scale: 2,
-                        useCORS: true,
-                        letterRendering: true
-                    },
-                    jsPDF: { 
-                        unit: 'mm', 
-                        format: 'a4', 
-                        orientation: 'portrait' 
-                    }
+                janelaImpressao.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Relatório CAS-DF - ${numeroDocumento}</title>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                margin: 20px; 
+                                line-height: 1.4;
+                                color: #333;
+                            }
+                            h2, h3 { 
+                                color: #1e3c72; 
+                                page-break-after: avoid;
+                            }
+                            h3 {
+                                border-bottom: 1px solid #ccc;
+                                padding-bottom: 5px;
+                                margin-top: 20px;
+                            }
+                            .signature-section {
+                                background: #f0fff4 !important;
+                                border: 2px solid #48bb78 !important;
+                                padding: 15px;
+                                border-radius: 8px;
+                                margin: 20px 0;
+                                page-break-inside: avoid;
+                            }
+                            ul {
+                                margin: 10px 0;
+                                padding-left: 20px;
+                            }
+                            li {
+                                margin-bottom: 5px;
+                            }
+                            @media print { 
+                                body { 
+                                    margin: 0; 
+                                    font-size: 12px;
+                                }
+                                .no-print {
+                                    display: none;
+                                }
+                                h2, h3 {
+                                    color: #000 !important;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${conteudo}
+                        <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; border-top: 1px solid #ccc;">
+                            <p><strong>💡 DICA:</strong> Use Ctrl+P ou Cmd+P para imprimir</p>
+                            <p>Para salvar como PDF: Imprimir → Destino: Salvar como PDF</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                janelaImpressao.document.close();
+                
+                // Aguardar carregar e abrir diálogo de impressão
+                janelaImpressao.onload = function() {
+                    setTimeout(() => {
+                        janelaImpressao.print();
+                    }, 500);
                 };
-
-                // Elemento a ser convertido
-                const elemento = document.getElementById('reportContent');
                 
-                // Gerar e baixar PDF
-                html2pdf()
-                    .set(opcoes)
-                    .from(elemento)
-                    .save()
-                    .then(() => {
-                        mostrarNotificacao('✅ PDF baixado com sucesso!', 'success');
-                    })
-                    .catch((error) => {
-                        console.error('Erro ao gerar PDF:', error);
-                        mostrarNotificacao('❌ Erro ao gerar PDF. Tente usar Imprimir > Salvar como PDF', 'error', 6000);
-                    });
-                    
+                mostrarNotificacao('✅ Janela de impressão aberta! Use Ctrl+P ou "Salvar como PDF"', 'success', 6000);
+                
             } catch (error) {
-                console.error('Erro na função gerarPDF:', error);
-                mostrarNotificacao('❌ Erro ao gerar PDF. Use o botão Imprimir como alternativa', 'error', 6000);
+                console.error('Erro ao imprimir:', error);
+                mostrarNotificacao('❌ Erro ao abrir impressão', 'error');
             }
         }
 
-        // Imprimir relatório
+        // Abrir relatório em nova aba (para visualizar/salvar)
+        function abrirRelatorioNovaAba() {
+            try {
+                const conteudo = document.getElementById('reportContent').innerHTML;
+                const novaAba = window.open('', '_blank');
+                
+                novaAba.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Relatório CAS-DF - ${numeroDocumento}</title>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { 
+                                font-family: Arial, sans-serif; 
+                                margin: 40px auto; 
+                                max-width: 800px;
+                                line-height: 1.6;
+                                color: #333;
+                                background: #fff;
+                            }
+                            h2, h3 { 
+                                color: #1e3c72; 
+                            }
+                            h3 {
+                                border-bottom: 2px solid #667eea;
+                                padding-bottom: 8px;
+                                margin-top: 25px;
+                            }
+                            .signature-section {
+                                background: #f0fff4 !important;
+                                border: 2px solid #48bb78 !important;
+                                padding: 20px;
+                                border-radius: 8px;
+                                margin: 25px 0;
+                            }
+                            ul {
+                                margin: 15px 0;
+                                padding-left: 25px;
+                            }
+                            li {
+                                margin-bottom: 8px;
+                            }
+                            .controls {
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                background: white;
+                                padding: 15px;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                border: 1px solid #ddd;
+                            }
+                            .btn {
+                                display: inline-block;
+                                padding: 8px 16px;
+                                margin: 5px;
+                                background: #667eea;
+                                color: white;
+                                text-decoration: none;
+                                border-radius: 5px;
+                                font-size: 14px;
+                                cursor: pointer;
+                                border: none;
+                            }
+                            .btn:hover {
+                                background: #5a67d8;
+                            }
+                            @media print {
+                                .controls { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="controls">
+                            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+                            <button class="btn" onclick="window.close()">❌ Fechar</button>
+                        </div>
+                        ${conteudo}
+                    </body>
+                    </html>
+                `);
+                
+                novaAba.document.close();
+                mostrarNotificacao('✅ Relatório aberto em nova aba!', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao abrir nova aba:', error);
+                mostrarNotificacao('❌ Erro ao abrir nova aba', 'error');
+            }
+        }
         function imprimirRelatorio() {
             const conteudo = document.getElementById('reportContent').innerHTML;
             const janelaImpressao = window.open('', '_blank');
