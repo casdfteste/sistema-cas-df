@@ -1415,9 +1415,23 @@ function showSaveConfirmation() {
             const reportContent = document.getElementById('report-content');
             const reportDate = document.getElementById('report-date');
             
-            reportDate.textContent = new Date().toLocaleDateString('pt-BR');
+            const now = new Date();
+reportDate.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
             
-            let html = '';
+            let html = `
+    <div style="background: linear-gradient(135deg, #e0f2fe, #f0f9ff); border: 2px solid #0ea5e9; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: center;">
+        <h2 style="color: #0c4a6e; margin-bottom: 15px; font-size: 1.5rem;">📋 RELATÓRIO DE FISCALIZAÇÃO CAS-DF</h2>
+        <p style="color: #0369a1; font-size: 1.1rem; font-weight: 600;">
+            🏛️ Conselho de Assistência Social do Distrito Federal
+        </p>
+        <p style="color: #0284c7; margin-top: 10px;">
+            <strong>Documento gerado em:</strong> ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+        </p>
+        <p style="color: #0284c7; font-size: 0.9rem; margin-top: 8px;">
+            ⚖️ Instrumento oficial de avaliação e controle social
+        </p>
+    </div>
+`;
 
             // Seção 0: Identificação do Serviço Fiscalizado
             const servicosSelecionados = [];
