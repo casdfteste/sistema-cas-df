@@ -1006,6 +1006,63 @@
                 <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
                     Próximo →
                 </button>
+                
+                <!-- Painel de controle completo para testes -->
+                <div style="margin-top: 15px; text-align: center; padding: 15px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 10px; border: 2px solid #e2e8f0;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #1e40af;">🧪 PAINEL DE CONTROLE - SISTEMA COMPLETO</strong><br>
+                        <small style="color: #6b7280;">Etapa <span id="debug-step">1</span> de 11</small>
+                    </div>
+                    
+                    <!-- Linha 1: Navegação -->
+                    <div style="margin-bottom: 10px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="window.testeNavegacao()" style="background: #3b82f6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
+                            🧪 Teste Nav
+                        </button>
+                        
+                        <button onclick="window.proximoSemValidacao()" style="background: #10b981; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
+                            ⏭️ Próximo
+                        </button>
+                        
+                        <button onclick="window.menuEtapas()" style="background: #8b5cf6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
+                            📋 Menu
+                        </button>
+                        
+                        <button onclick="window.irParaEtapa(11)" style="background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
+                            🏁 Final
+                        </button>
+                    </div>
+                    
+                    <!-- Linha 2: Dados -->
+                    <div style="margin-bottom: 10px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="window.preencherDadosExemplo()" style="background: #059669; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
+                            ✨ Preencher Tudo
+                        </button>
+                        
+                        <button onclick="window.verificarCompletude()" style="background: #0891b2; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
+                            📊 Verificar
+                        </button>
+                        
+                        <button onclick="window.limparTodosDados()" style="background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
+                            🗑️ Limpar
+                        </button>
+                    </div>
+                    
+                    <!-- Linha 3: Atalhos rápidos -->
+                    <div style="font-size: 0.7rem; color: #6b7280;">
+                        <strong>Atalhos:</strong>
+                        <button onclick="window.irParaEtapa(1)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">1</button>
+                        <button onclick="window.irParaEtapa(3)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">3</button>
+                        <button onclick="window.irParaEtapa(5)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">5</button>
+                        <button onclick="window.irParaEtapa(7)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">7</button>
+                        <button onclick="window.irParaEtapa(9)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">9</button>
+                        <button onclick="window.irParaEtapa(11)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">11</button>
+                    </div>
+                    
+                    <div style="margin-top: 8px; font-size: 0.65rem; color: #9ca3af;">
+                        💡 <strong>Dica:</strong> Use "✨ Preencher Tudo" para ver o sistema completo funcionando!
+                    </div>
+                </div>
             </div>
 
             <div class="final-actions" id="final-actions">
@@ -1602,7 +1659,18 @@
             setTimeout(() => {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('form-view').style.display = 'block';
+                
+                // Garantir que a navegação está visível
+                const navigation = document.querySelector('.navigation');
+                if (navigation) {
+                    navigation.style.display = 'flex';
+                }
+                
+                // Inicializar primeira etapa
+                currentStep = 1;
                 renderStep();
+                
+                console.log('Sistema iniciado - Etapa 1 carregada');
             }, 1500);
         }
 
@@ -1642,12 +1710,21 @@
             document.getElementById('progress-percent').textContent = percent;
             document.getElementById('progress-fill').style.width = percent + '%';
             document.getElementById('step-name').textContent = steps[currentStep - 1];
+            
+            // Atualizar debug info
+            updateDebugInfo();
+            
+            console.log(`Progresso atualizado: ${currentStep}/${totalSteps} (${percent}%)`);
         }
 
         function renderStep() {
+            // Mostrar conteúdo da etapa
             document.getElementById('step-content').innerHTML = stepContent[currentStep];
+            
+            // Adicionar botão de logout
             adicionarBotaoLogout();
             
+            // Configurar event listeners
             setTimeout(() => {
                 loadStepData();
                 setupEventListeners();
@@ -1665,38 +1742,353 @@
                 }
             }, 100);
             
+            // Atualizar progresso
             updateProgress();
             
-            document.getElementById('prev-btn').disabled = currentStep === 1;
-            document.getElementById('next-btn').disabled = currentStep === totalSteps;
+            // Configurar botões de navegação
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finalActions = document.getElementById('final-actions');
             
-            if (currentStep === totalSteps) {
-                document.getElementById('next-btn').style.display = 'none';
-                document.getElementById('final-actions').classList.add('show');
-            } else {
-                document.getElementById('next-btn').style.display = 'inline-block';
-                document.getElementById('final-actions').classList.remove('show');
+            // Garantir que os botões existem
+            if (prevBtn && nextBtn) {
+                // Botão anterior
+                prevBtn.disabled = currentStep === 1;
+                prevBtn.style.opacity = currentStep === 1 ? '0.5' : '1';
+                
+                // Botão próximo
+                if (currentStep === totalSteps) {
+                    nextBtn.style.display = 'none';
+                    finalActions.classList.add('show');
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.disabled = false;
+                    nextBtn.style.opacity = '1';
+                    finalActions.classList.remove('show');
+                }
+                
+                // Mostrar navegação
+                const navigation = document.querySelector('.navigation');
+                if (navigation) {
+                    navigation.style.display = 'flex';
+                }
             }
+            
+            console.log(`Renderizada etapa ${currentStep} de ${totalSteps}`);
         }
 
         function nextStep() {
+            console.log(`Tentando ir para próxima etapa. Atual: ${currentStep}`);
+            
             if (currentStep < totalSteps) {
+                // Validar campos obrigatórios
                 if (!validateCurrentStep()) {
-                    return;
+                    console.log('Validação falhou - permanecendo na etapa atual');
+                    return false;
                 }
                 
+                // Salvar dados da etapa atual
                 saveCurrentStep();
+                
+                // Avançar para próxima etapa
                 currentStep++;
+                console.log(`Avançando para etapa ${currentStep}`);
+                
+                // Re-renderizar
                 renderStep();
+                
+                // Mostrar notificação de progresso
                 showSaveNotification();
+                
+                // Scroll para o topo
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                return true;
             }
+            
+            console.log('Já está na última etapa');
+            return false;
         }
 
         function prevStep() {
+            console.log(`Tentando voltar etapa. Atual: ${currentStep}`);
+            
             if (currentStep > 1) {
+                // Salvar dados da etapa atual
                 saveCurrentStep();
+                
+                // Voltar etapa
                 currentStep--;
+                console.log(`Voltando para etapa ${currentStep}`);
+                
+                // Re-renderizar
                 renderStep();
+                
+                // Scroll para o topo
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                return true;
+            }
+            
+            console.log('Já está na primeira etapa');
+            return false;
+        }
+
+        // Funções globais para garantir acesso
+        window.nextStep = nextStep;
+        window.prevStep = prevStep;
+        
+        // Função de teste para debug
+        window.testeNavegacao = function() {
+            console.log('=== TESTE DE NAVEGAÇÃO ===');
+            console.log('Etapa atual:', currentStep);
+            console.log('Total de etapas:', totalSteps);
+            
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            console.log('Botão anterior existe:', !!prevBtn);
+            console.log('Botão próximo existe:', !!nextBtn);
+            
+            if (prevBtn) console.log('Botão anterior desabilitado:', prevBtn.disabled);
+            if (nextBtn) console.log('Botão próximo desabilitado:', nextBtn.disabled);
+            
+            // Teste rápido - ir para próxima etapa
+            if (currentStep < totalSteps) {
+                alert(`Testando navegação: Indo da etapa ${currentStep} para ${currentStep + 1}`);
+                nextStep();
+            } else {
+                alert('Já está na última etapa!');
+            }
+        };
+        
+        // Função para pular para qualquer etapa (só para teste)
+        window.irParaEtapa = function(etapa) {
+            if (etapa >= 1 && etapa <= totalSteps) {
+                saveCurrentStep(); // Salvar dados atual
+                currentStep = etapa;
+                renderStep();
+                console.log(`Navegou diretamente para etapa ${etapa}`);
+                return true;
+            }
+            console.log(`Etapa ${etapa} inválida. Use 1-${totalSteps}`);
+            return false;
+        };
+        
+        // Função para testar todas as etapas
+        window.testarTodasEtapas = function() {
+            console.log('=== TESTANDO TODAS AS ETAPAS ===');
+            
+            for(let i = 1; i <= totalSteps; i++) {
+                try {
+                    if (stepContent[i]) {
+                        console.log(`✅ Etapa ${i}: OK`);
+                    } else {
+                        console.log(`❌ Etapa ${i}: SEM CONTEÚDO`);
+                    }
+                } catch(e) {
+                    console.log(`❌ Etapa ${i}: ERRO -`, e.message);
+                }
+            }
+            
+            alert('Teste concluído! Veja o console (F12) para detalhes.');
+        };
+        
+        // Função para navegar sem validação (só para teste)
+        window.proximoSemValidacao = function() {
+            if (currentStep < totalSteps) {
+                saveCurrentStep();
+                currentStep++;
+                renderStep();
+                console.log(`Navegou para etapa ${currentStep} (sem validação)`);
+                return true;
+            }
+            return false;
+        };
+        
+        // Função para preencher dados de exemplo em todas as etapas
+        window.preencherDadosExemplo = function() {
+            console.log('Preenchendo dados de exemplo...');
+            
+            // Dados de exemplo para todas as etapas
+            const dadosExemplo = {
+                // Etapa 1 - Serviços (será preenchido via checkboxes)
+                
+                // Etapa 2 - Documentos
+                'parecer-tecnico': 'PT-2024-001',
+                'nota-tecnica': 'NT-2024-005',
+                'plano-acao': '2024',
+                'relatorio-atividades': '2023',
+                
+                // Etapa 3 - Dados da Visita
+                'data-visita': new Date().toISOString().split('T')[0],
+                'horario': '14:30',
+                'nome-responsavel': 'Maria Silva Santos',
+                'funcao-responsavel': 'Coordenadora Geral',
+                
+                // Etapa 4 - Dados da Entidade
+                'nome-entidade': 'Instituto Social Esperança',
+                'cnpj-entidade': '12.345.678/0001-90',
+                'responsavel-legal': 'João Pedro Oliveira',
+                'telefone-entidade': '(61) 3333-4444',
+                'email-entidade': 'contato@institutosocial.org.br',
+                'endereco-entidade': 'QN 15 Conjunto A Casa 23, Riacho Fundo I - Brasília/DF - CEP: 71805-015',
+                'licenca-funcionamento': 'ALV-2024-0123',
+                
+                // Etapa 5 - Público-Alvo
+                'publico-alvo': 'Crianças e adolescentes de 6 a 17 anos em situação de vulnerabilidade social, prioritariamente de famílias beneficiárias do Programa Bolsa Família e cadastradas no CadÚnico.',
+                'capacidade-atendimento': '60',
+                'atendidos-atual': '45',
+                
+                // Etapa 6 - Formas de Acesso
+                'outras-formas-acesso': 'Divulgação em escolas da rede pública, parcerias com Unidades Básicas de Saúde e campanhas educativas na comunidade.',
+                'criterios-elegibilidade': 'Estar inscrito no CadÚnico, renda familiar per capita até meio salário mínimo, residir na área de abrangência do serviço, estar matriculado na rede pública de ensino.',
+                
+                // Etapa 7 - Equipe
+                'numero-funcionarios': '8',
+                'numero-voluntarios': '12',
+                'composicao-equipe': '1 Coordenador (Assistente Social), 2 Educadores Sociais (Pedagogia), 1 Psicólogo, 1 Arte-educador, 2 Monitores (Ensino Médio), 1 Auxiliar Administrativo.',
+                'capacitacao-equipe': 'Formação continuada em direitos da criança e adolescente, oficinas de arte-educação, curso de primeiros socorros, capacitação em Sistema de Informação do SUAS.',
+                
+                // Etapa 8 - Infraestrutura
+                'condicoes-fisicas': 'Imóvel próprio em bom estado de conservação, com 8 salas amplas, 2 banheiros adaptados, cozinha, refeitório, área de recreação coberta e quadra esportiva descoberta.',
+                'acessibilidade': 'Possui rampa de acesso principal, banheiros adaptados com barras de apoio, portas com vão livre adequado, sinalização tátil em pontos estratégicos.',
+                'equipamentos': 'Computadores, projetor multimídia, sistema de som, materiais pedagógicos, jogos educativos, instrumentos musicais, materiais esportivos.',
+                'seguranca': 'Portão com controle de acesso, sistema de câmeras, extintor de incêndio, saídas de emergência sinalizadas, kit de primeiros socorros.',
+                
+                // Etapa 9 - Funcionamento
+                'horario-funcionamento': 'Segunda a sexta-feira das 7h às 17h',
+                'dias-funcionamento': 'Segunda a sexta-feira',
+                'atividades-desenvolvidas': 'Acompanhamento escolar, oficinas de arte e cultura, atividades esportivas, rodas de conversa sobre cidadania, passeios educativos, atendimento psicossocial individual e familiar.',
+                'metodologia': 'Metodologia participativa baseada na pedagogia social, com foco no protagonismo juvenil, desenvolvimento de competências socioemocionais e fortalecimento de vínculos familiares e comunitários.',
+                'fluxo-atendimento': 'Acolhida → Entrevista social → Elaboração do Plano Individual de Atendimento → Participação nas atividades → Acompanhamento sistemático → Reavaliação periódica.',
+                
+                // Etapa 10 - Articulação
+                'articulacao-rede': 'Articulação regular com CRAS, CREAS, escolas públicas da região, Unidades Básicas de Saúde, Conselho Tutelar e demais equipamentos da rede socioassistencial.',
+                'parcerias': 'Secretaria de Educação do DF, Secretaria de Saúde, Polícia Militar (Programa Educacional de Resistência às Drogas), empresas locais para doações.',
+                'encaminhamentos': 'Encaminhamentos para serviços de saúde, documentação civil, benefícios sociais, cursos profissionalizantes, inserção no mercado de trabalho para adolescentes.',
+                'territorio-atuacao': 'Riacho Fundo I e adjacências, atendendo prioritariamente as quadras QN 13 a QN 18 e áreas circunvizinhas em situação de maior vulnerabilidade.',
+                
+                // Etapa 11 - Voto/Conclusão
+                'analises-tecnicas': 'A entidade demonstra adequado funcionamento dos serviços ofertados, com metodologia consistente e equipe técnica qualificada. A infraestrutura atende aos padrões mínimos exigidos.',
+                'pontos-positivos': 'Excelente articulação com a rede, metodologia bem estruturada, equipe comprometida, boa infraestrutura, alto índice de frequência dos usuários.',
+                'pontos-melhoria': 'Necessário ampliar as ações de fortalecimento familiar, criar protocolo de acompanhamento de egressos, melhorar registro das atividades desenvolvidas.',
+                'recomendacoes': 'Implementar grupos sistemáticos com famílias, elaborar plano de acompanhamento pós-desligamento, capacitar equipe em registro e documentação das ações.',
+                'justificativa-voto': 'A entidade cumpre adequadamente os objetivos propostos e apresenta resultados positivos no desenvolvimento dos usuários atendidos.',
+                'nome-conselheiro': usuarioLogado ? usuarioLogado.nome : 'Conselheiro Exemplo',
+                'registro-conselheiro': 'CAS-DF-001/2024',
+                'data-assinatura': new Date().toISOString().split('T')[0],
+                'local-assinatura': 'Brasília - DF'
+            };
+            
+            // Preencher checkboxes da etapa 1
+            const servicosExemplo = [
+                'convivencia-fortalecimento',
+                'protecao-social-basica',
+                'acoes-defesa-direitos'
+            ];
+            
+            const faixaEtariaExemplo = [
+                'criancas',
+                'adolescentes'
+            ];
+            
+            const formasAcessoExemplo = [
+                'demanda-espontanea',
+                'encaminhamento',
+                'busca-ativa'
+            ];
+            
+            // Aplicar os dados
+            Object.assign(formData, dadosExemplo);
+            
+            // Aplicar checkboxes
+            if (!formData.checkboxes) formData.checkboxes = {};
+            formData.checkboxes['servico-fiscalizado'] = servicosExemplo;
+            formData.checkboxes['faixa-etaria'] = faixaEtariaExemplo;
+            formData.checkboxes['formas-acesso'] = formasAcessoExemplo;
+            
+            // Aplicar radio button
+            formData['voto-final'] = 'aprovado-ressalvas';
+            
+            // Salvar no localStorage
+            localStorage.setItem('fiscalizacao-cas-df', JSON.stringify(formData));
+            
+            // Recarregar dados na etapa atual
+            loadStepData();
+            
+            alert('✅ Dados de exemplo preenchidos em todas as 11 etapas!\n\nAgora você pode navegar por todas as etapas e ver o formulário completo.');
+            console.log('Dados de exemplo aplicados:', formData);
+        };
+        
+        // Função para limpar todos os dados
+        window.limparTodosDados = function() {
+            if (confirm('⚠️ Tem certeza que deseja limpar TODOS os dados?\n\nEsta ação não pode ser desfeita.')) {
+                formData = {};
+                localStorage.removeItem('fiscalizacao-cas-df');
+                loadStepData();
+                alert('🗑️ Todos os dados foram removidos!');
+                console.log('Dados limpos');
+            }
+        };
+        
+        // Função para verificar completude do formulário
+        window.verificarCompletude = function() {
+            let etapasCompletas = 0;
+            let etapasIncompletas = [];
+            
+            // Verificar cada etapa
+            for (let etapa = 1; etapa <= totalSteps; etapa++) {
+                const camposObrigatorios = requiredFields[etapa] || [];
+                let etapaCompleta = true;
+                
+                if (etapa === 1) {
+                    // Verificar se tem serviços selecionados
+                    if (!formData.checkboxes || !formData.checkboxes['servico-fiscalizado'] || formData.checkboxes['servico-fiscalizado'].length === 0) {
+                        etapaCompleta = false;
+                    }
+                }
+                
+                // Verificar campos obrigatórios
+                camposObrigatorios.forEach(campo => {
+                    if (!formData[campo] || formData[campo].trim() === '') {
+                        etapaCompleta = false;
+                    }
+                });
+                
+                if (etapaCompleta) {
+                    etapasCompletas++;
+                } else {
+                    etapasIncompletas.push(etapa);
+                }
+            }
+            
+            console.log(`Completude: ${etapasCompletas}/${totalSteps} etapas completas`);
+            console.log('Etapas incompletas:', etapasIncompletas);
+            
+            alert(`📊 RELATÓRIO DE COMPLETUDE\n\n✅ Etapas completas: ${etapasCompletas}/${totalSteps}\n❌ Etapas incompletas: ${etapasIncompletas.length > 0 ? etapasIncompletas.join(', ') : 'Nenhuma'}\n\n${etapasCompletas === totalSteps ? '🎉 Formulário 100% completo!' : '⚠️ Complete as etapas pendentes'}`);
+        };
+        
+        // Função para navegação rápida por etapas
+        window.menuEtapas = function() {
+            const opcoes = steps.map((nome, index) => `${index + 1}. ${nome}`).join('\n');
+            const escolha = prompt(`📋 NAVEGAÇÃO RÁPIDA\n\nEscolha a etapa (1-${totalSteps}):\n\n${opcoes}\n\nDigite o número da etapa:`);
+            
+            if (escolha) {
+                const etapa = parseInt(escolha);
+                if (etapa >= 1 && etapa <= totalSteps) {
+                    window.irParaEtapa(etapa);
+                } else {
+                    alert('❌ Etapa inválida! Use números de 1 a ' + totalSteps);
+                }
+            }
+        };
+        
+        // Atualizar debug step
+        function updateDebugInfo() {
+            const debugStep = document.getElementById('debug-step');
+            if (debugStep) {
+                debugStep.textContent = currentStep;
             }
         }
 
@@ -1710,6 +2102,7 @@
             
             clearValidationMessages();
             
+            // Validação especial para Etapa 1 (checkboxes de serviços)
             if (currentStep === 1) {
                 const serviceCheckboxes = document.querySelectorAll('input[name="servico-fiscalizado"]:checked');
                 if (serviceCheckboxes.length === 0) {
@@ -1724,6 +2117,7 @@
                 }
             }
             
+            // Validação dos campos obrigatórios
             currentRequiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (!field) return;
@@ -1753,8 +2147,12 @@
                 }
             });
             
+            // Mostrar resumo de erros se houver
             if (!isValid) {
                 showValidationSummary(errors);
+                console.log(`Validação falhou na etapa ${currentStep}:`, errors);
+            } else {
+                console.log(`Validação OK na etapa ${currentStep}`);
             }
             
             return isValid;
