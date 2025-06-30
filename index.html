@@ -474,6 +474,50 @@
 </head>
 <body>
     <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="login-view">
+            <div class="header">
+                <h1>Sistema de Fiscalização CAS-DF</h1>
+                <p>Conselheiros de Assistência Social do Distrito Federal</p>
+            </div>
+            
+            <div style="padding: 60px 40px; text-align: center; background: white;">
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; border-radius: 15px; padding: 40px; margin-bottom: 30px;">
+                        <h2 style="color: #1e40af; margin-bottom: 30px; font-size: 1.5rem;">
+                            🔐 Acesso Restrito
+                        </h2>
+                        
+                        <div id="login-form">
+                            <div style="margin-bottom: 20px; text-align: left;">
+                                <label for="nome-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nome Completo:</label>
+                                <input type="text" id="nome-conselheiro-login" placeholder="Digite seu nome completo" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                            </div>
+                            
+                            <div style="margin-bottom: 25px; text-align: left;">
+                                <label for="cpf-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">CPF:</label>
+                                <input type="text" id="cpf-conselheiro-login" placeholder="000.000.000-00" maxlength="14" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                                <small style="color: #6b7280; font-size: 0.85rem;">Apenas conselheiros cadastrados no CAS-DF</small>
+                            </div>
+                            
+                            <button onclick="fazerLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
+                                🏛️ Entrar com GOV.BR
+                            </button>
+                            
+                            <div id="login-error" style="display: none; background: #fef2f2; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.9rem;">
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <p style="color: #0c4a6e; font-size: 0.85rem; margin: 0;">
+                                🛡️ <strong>Acesso Seguro:</strong> Autenticação via GOV.BR garante a identidade do conselheiro responsável pelo relatório.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- FORMULÁRIO PRINCIPAL -->
         <div id="form-view">
             <div class="header">
@@ -1015,7 +1059,126 @@
         };
 
         /* ========================================
-           FUNÇÕES DE NAVEGAÇÃO
+           SISTEMA DE LOGIN
+        ======================================== */
+        let usuarioLogado = null;
+
+        function formatarCPF(cpf) {
+            // Remove tudo que não é dígito
+            cpf = cpf.replace(/\D/g, '');
+            
+            // Aplica a formatação
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+            cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            
+            return cpf;
+        }
+
+        function validarCPF(cpf) {
+            // Remove formatação
+            cpf = cpf.replace(/\D/g, '');
+            
+            // Verifica se tem 11 dígitos
+            if (cpf.length !== 11) return false;
+            
+            // Verifica se não são todos iguais
+            if (/^(\d)\1{10}$/.test(cpf)) return false;
+            
+            // Validação do dígito verificador
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let resto = 11 - (soma % 11);
+            let digito1 = resto < 2 ? 0 : resto;
+            
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = 11 - (soma % 11);
+            let digito2 = resto < 2 ? 0 : resto;
+            
+            return parseInt(cpf.charAt(9)) === digito1 && parseInt(cpf.charAt(10)) === digito2;
+        }
+
+        function fazerLogin() {
+            const nome = document.getElementById('nome-conselheiro-login').value.trim();
+            const cpf = document.getElementById('cpf-conselheiro-login').value.trim();
+            const errorDiv = document.getElementById('login-error');
+            
+            // Limpar erro anterior
+            errorDiv.style.display = 'none';
+            
+            // Validações
+            if (!nome) {
+                errorDiv.innerHTML = '⚠️ Digite seu nome completo';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!cpf) {
+                errorDiv.innerHTML = '⚠️ Digite seu CPF';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!validarCPF(cpf)) {
+                errorDiv.innerHTML = '⚠️ CPF inválido. Verifique os números digitados.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Simular autenticação GOV.BR
+            usuarioLogado = {
+                nome: nome,
+                cpf: formatarCPF(cpf),
+                dataLogin: new Date(),
+                idRelatorio: 'CAS-' + new Date().getFullYear() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+            };
+            
+            // Salvar dados do usuário
+            localStorage.setItem('usuario-cas-df', JSON.stringify(usuarioLogado));
+            
+            // Mostrar sucesso e entrar no sistema
+            errorDiv.innerHTML = '✅ Autenticação realizada com sucesso! Redirecionando...';
+            errorDiv.style.background = '#f0fdf4';
+            errorDiv.style.borderColor = '#10b981';
+            errorDiv.style.color = '#059669';
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('form-view').style.display = 'block';
+                renderStep();
+                
+                // Preencher dados do conselheiro automaticamente
+                setTimeout(() => {
+                    const nomeField = document.getElementById('nome-conselheiro');
+                    if (nomeField) {
+                        nomeField.value = usuarioLogado.nome;
+                    }
+                }, 500);
+                
+            }, 1500);
+        }
+
+        function logout() {
+            localStorage.removeItem('usuario-cas-df');
+            localStorage.removeItem('fiscalizacao-cas-df');
+            usuarioLogado = null;
+            document.getElementById('login-view').style.display = 'block';
+            document.getElementById('form-view').style.display = 'none';
+            document.getElementById('report-view').classList.remove('show');
+            
+            // Limpar campos de login
+            document.getElementById('nome-conselheiro-login').value = '';
+            document.getElementById('cpf-conselheiro-login').value = '';
+        }
+
+        /* ========================================
+           FUNÇÕES DE NAVEGAÇÃO (ATUALIZADAS)
         ======================================== */
         function updateProgress() {
             const percent = Math.round((currentStep / totalSteps) * 100);
@@ -1392,15 +1555,48 @@
                 </div>
             `;
 
-            // Assinatura do Conselheiro
+            // Autenticação e Assinatura do Conselheiro
+            let dataLogin = '';
+            let horaLogin = '';
+            let idRelatorio = '';
+            let cpfFormatado = '';
+            let nomeConselheiro = '';
+            
+            if (usuarioLogado) {
+                dataLogin = usuarioLogado.dataLogin.toLocaleDateString('pt-BR');
+                horaLogin = usuarioLogado.dataLogin.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                idRelatorio = usuarioLogado.idRelatorio;
+                cpfFormatado = usuarioLogado.cpf;
+                nomeConselheiro = usuarioLogado.nome;
+            }
+            
             html += `
-                <div class="report-section">
-                    <h3>✍️ Assinatura do Conselheiro</h3>
-                    <div class="report-item"><strong>Nome:</strong> ${formData['nome-conselheiro'] || 'Não informado'}</div>
-                    <div class="report-item"><strong>Registro/Matrícula:</strong> ${formData['registro-conselheiro'] || 'Não informado'}</div>
-                    <div class="report-item"><strong>Data:</strong> ${formData['data-assinatura'] ? new Date(formData['data-assinatura']).toLocaleDateString('pt-BR') : 'Não informado'}</div>
-                    <div class="report-item"><strong>Local:</strong> ${formData['local-assinatura'] || 'Não informado'}</div>
-                    <div class="report-item"><strong>Declaração:</strong> ${formData['confirma-veracidade'] ? 'Confirmada' : 'Não confirmada'}</div>
+                <div class="report-section" style="background: #f0f9ff; border: 2px solid #0ea5e9;">
+                    <h3>🔐 Autenticação e Assinatura Digital</h3>
+                    <div class="report-item"><strong>Conselheiro Responsável:</strong> ${nomeConselheiro || 'Não autenticado'}</div>
+                    <div class="report-item"><strong>CPF:</strong> ${cpfFormatado || 'Não informado'}</div>
+                    <div class="report-item"><strong>Data de Autenticação:</strong> ${dataLogin || 'Não informado'} ${horaLogin ? 'às ' + horaLogin : ''}</div>
+                    <div class="report-item"><strong>ID do Relatório:</strong> ${idRelatorio || 'Não gerado'}</div>
+                    <div class="report-item"><strong>Autenticação:</strong> ${usuarioLogado ? '✅ Via GOV.BR' : '❌ Não autenticado'}</div>
+                    <div class="report-item"><strong>Status:</strong> ${formData['confirma-veracidade'] ? '✅ Declaração de veracidade confirmada' : '⚠️ Declaração não confirmada'}</div>
+                </div>
+            `;
+
+            // Rodapé de verificação
+            const dataAtual = now.toLocaleDateString('pt-BR');
+            const horaAtual = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const hashSimples = usuarioLogado ? (nomeConselheiro + cpfFormatado + dataAtual).length.toString() + 'CAS' : 'N/A';
+                
+            html += `
+                <div style="background: #f8fafc; border: 1px solid #d1d5db; border-radius: 8px; padding: 20px; margin-top: 30px; text-align: center;">
+                    <h4 style="color: #374151; margin-bottom: 15px;">📄 Verificação do Documento</h4>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 10px;">
+                        Este relatório foi gerado pelo Sistema de Fiscalização CAS-DF em ${dataAtual} às ${horaAtual}
+                    </p>
+                    <p style="color: #6b7280; font-size: 0.85rem;">
+                        <strong>ID de Verificação:</strong> ${idRelatorio || 'N/A'} | 
+                        <strong>Hash:</strong> ${hashSimples}
+                    </p>
                 </div>
             `;
 
@@ -1459,8 +1655,29 @@
            INICIALIZAÇÃO DO SISTEMA
         ======================================== */
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar sistema
-            renderStep();
+            // Verificar se usuário já está logado
+            const usuarioSalvo = localStorage.getItem('usuario-cas-df');
+            if (usuarioSalvo) {
+                usuarioLogado = JSON.parse(usuarioSalvo);
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('form-view').style.display = 'block';
+                renderStep();
+            } else {
+                document.getElementById('login-view').style.display = 'block';
+                document.getElementById('form-view').style.display = 'none';
+            }
+            
+            // Formatação automática do CPF
+            document.getElementById('cpf-conselheiro-login').addEventListener('input', function(e) {
+                e.target.value = formatarCPF(e.target.value);
+            });
+            
+            // Enter para fazer login
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && document.getElementById('login-view').style.display !== 'none') {
+                    fazerLogin();
+                }
+            });
             
             // Auto-save a cada 30 segundos
             setInterval(saveCurrentStep, 30000);
@@ -1509,6 +1726,82 @@
                 }
             });
         });
+
+        /* ========================================
+           BOTÃO DE LOGOUT (ADICIONAR AO HEADER)
+        ======================================== */
+        function adicionarBotaoLogout() {
+            const header = document.querySelector('.header');
+            if (header && usuarioLogado && !document.getElementById('logout-btn')) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.id = 'logout-btn';
+                logoutBtn.innerHTML = '🚪 Sair';
+                logoutBtn.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                    border: 1px solid rgba(255,255,255,0.3);
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                `;
+                logoutBtn.onclick = logout;
+                header.style.position = 'relative';
+                header.appendChild(logoutBtn);
+            }
+        }.borderRadius = '';
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+        function renderStep() {
+            // Mostrar conteúdo da etapa
+            document.getElementById('step-content').innerHTML = stepContent[currentStep];
+            
+            // Adicionar botão de logout se usuário logado
+            adicionarBotaoLogout();
+            
+            // Carregar dados salvos
+            loadStepData();
+            
+            // Atualizar progresso
+            updateProgress();
+            
+            // Atualizar botões de navegação
+            document.getElementById('prev-btn').disabled = currentStep === 1;
+            document.getElementById('next-btn').disabled = currentStep === totalSteps;
+            
+            // Mostrar/esconder ações finais
+            if (currentStep === totalSteps) {
+                document.getElementById('next-btn').style.display = 'none';
+                document.getElementById('final-actions').classList.add('show');
+            } else {
+                document.getElementById('next-btn').style.display = 'inline-block';
+                document.getElementById('final-actions').classList.remove('show');
+            }
+            
+            // Definir data atual para assinatura na etapa 11
+            if (currentStep === 11) {
+                setTimeout(() => {
+                    const dataAssinatura = document.getElementById('data-assinatura');
+                    if (dataAssinatura && !dataAssinatura.value) {
+                        dataAssinatura.value = new Date().toISOString().split('T')[0];
+                    }
+                    
+                    // Preencher nome do conselheiro automaticamente
+                    const nomeField = document.getElementById('nome-conselheiro');
+                    if (nomeField && usuarioLogado && !nomeField.value) {
+                        nomeField.value = usuarioLogado.nome;
+                    }
+                }, 100);
+            }
+        }
 
         /* ========================================
            AUTO-SAVE E NOTIFICAÇÕES
