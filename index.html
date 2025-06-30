@@ -939,26 +939,33 @@
                         <div id="login-form">
                             <div style="margin-bottom: 20px; text-align: left;">
                                 <label for="nome-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nome Completo:</label>
-                                <input type="text" id="nome-conselheiro-login" placeholder="Digite seu nome completo" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                                <input type="text" id="nome-conselheiro-login" placeholder="Digite qualquer nome para teste" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                                <small style="color: #6b7280; font-size: 0.8rem;">Ex: João da Silva, Maria Santos, etc.</small>
                             </div>
                             
                             <div style="margin-bottom: 25px; text-align: left;">
                                 <label for="cpf-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">CPF:</label>
                                 <input type="text" id="cpf-conselheiro-login" placeholder="000.000.000-00" maxlength="14" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
-                                <small style="color: #6b7280; font-size: 0.85rem;">Apenas conselheiros cadastrados no CAS-DF</small>
+                                <small style="color: #6b7280; font-size: 0.8rem;">
+                                    <strong>MODO TESTE:</strong> Use qualquer CPF com 11 dígitos<br>
+                                    Ex: 123.456.789-00, 111.222.333-44, etc.
+                                </small>
                             </div>
                             
                             <button onclick="fazerLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
-                                🏛️ Entrar com GOV.BR
+                                🧪 Entrar no Sistema (TESTE)
                             </button>
                             
                             <div id="login-error" style="display: none; background: #fef2f2; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.9rem;">
                             </div>
                         </div>
                         
-                        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 15px; margin-top: 20px;">
-                            <p style="color: #0c4a6e; font-size: 0.85rem; margin: 0;">
-                                🛡️ <strong>Acesso Seguro:</strong> Autenticação via GOV.BR garante a identidade do conselheiro responsável pelo relatório.
+                        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <p style="color: #92400e; font-size: 0.85rem; margin: 0;">
+                                🧪 <strong>VERSÃO DE DEMONSTRAÇÃO:</strong><br>
+                                • Nome: Qualquer nome fictício<br>
+                                • CPF: Qualquer sequência de 11 números<br>
+                                • Dados não são enviados para servidores reais
                             </p>
                         </div>
                     </div>
@@ -1562,11 +1569,20 @@
                 return;
             }
             
-            if (!validarCPF(cpf)) {
-                errorDiv.innerHTML = '⚠️ CPF inválido. Verifique os números digitados.';
+            // MODO TESTE: Aceitar qualquer CPF formatado
+            const cpfNumeros = cpf.replace(/\D/g, '');
+            if (cpfNumeros.length !== 11) {
+                errorDiv.innerHTML = '⚠️ CPF deve ter 11 dígitos. Use qualquer número para teste (ex: 123.456.789-00)';
                 errorDiv.style.display = 'block';
                 return;
             }
+            
+            // Para modo de produção, descomente a linha abaixo:
+            // if (!validarCPF(cpf)) {
+            //     errorDiv.innerHTML = '⚠️ CPF inválido. Verifique os números digitados.';
+            //     errorDiv.style.display = 'block';
+            //     return;
+            // }
             
             usuarioLogado = {
                 nome: nome,
