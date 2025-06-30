@@ -1666,8 +1666,28 @@ reportDate.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleT
             URL.revokeObjectURL(url);
         }
 
-       // Aguardar página carregar completamente
-setTimeout(() => {
+       // Forçar carregamento da primeira etapa
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        // Forçar stepContent se não existir
+        if (typeof stepContent === 'undefined') {
+            window.stepContent = {
+                1: document.getElementById('step-content').innerHTML = `
+                    <h2 class="step-title step-1">1. Identificação do Serviço Fiscalizado</h2>
+                    <div class="form-section">
+                        <h3 style="color: #3b82f6; margin-bottom: 25px; font-size: 1.3rem; text-align: center;">
+                            📋 Este relatório analisará o seguinte serviço:
+                        </h3>
+                        <p>Sistema carregado com sucesso! Use os botões de navegação.</p>
+                    </div>
+                `
+            };
+        } else {
+            document.getElementById('step-content').innerHTML = stepContent[1];
+        }
+        updateProgress();
+    }, 200);
+});
     console.log('Iniciando sistema...');
     const stepElement = document.getElementById('step-content');
     if (stepElement && stepContent) {
