@@ -1433,52 +1433,8 @@ reportDate.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleT
     </div>
 `;
             
-// ========================================
-// RESUMO EXECUTIVO
-// ========================================
-const totalCamposPreenchidos = Object.keys(formData).length;
-const votoFinal = formData['voto-final'] || 'Não informado';
-const nomeEntidade = formData['nome-entidade'] || 'Não informado';
-const dataVisita = formData['data-visita'] ? new Date(formData['data-visita']).toLocaleDateString('pt-BR') : 'Não informado';
+           let html = '';
 
-const votoTexto = {
-    'aprovado': '✅ APROVADO',
-    'aprovado-ressalvas': '⚠️ APROVADO COM RESSALVAS', 
-    'reprovado': '❌ REPROVADO'
-};
-
-html += `
-    <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px solid #64748b; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
-        <h2 style="color: #1e293b; margin-bottom: 20px; text-align: center; font-size: 1.4rem;">
-            📊 RESUMO EXECUTIVO
-        </h2>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                <h4 style="color: #1e40af; margin-bottom: 8px;">🏢 Entidade Fiscalizada</h4>
-                <p style="margin: 0; font-weight: 600;">${nomeEntidade}</p>
-            </div>
-            
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #059669;">
-                <h4 style="color: #047857; margin-bottom: 8px;">📅 Data da Fiscalização</h4>
-                <p style="margin: 0; font-weight: 600;">${dataVisita}</p>
-            </div>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #7c3aed;">
-                <h4 style="color: #6d28d9; margin-bottom: 8px;">📋 Completude do Relatório</h4>
-                <p style="margin: 0; font-weight: 600;">${totalCamposPreenchidos} campos preenchidos</p>
-            </div>
-            
-            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid ${votoFinal === 'aprovado' ? '#059669' : votoFinal === 'reprovado' ? '#dc2626' : '#d97706'};">
-                <h4 style="color: ${votoFinal === 'aprovado' ? '#047857' : votoFinal === 'reprovado' ? '#b91c1c' : '#b45309'}; margin-bottom: 8px;">⚖️ Resultado da Fiscalização</h4>
-                <p style="margin: 0; font-weight: 600; font-size: 1.1rem;">${votoTexto[votoFinal] || votoFinal}</p>
-            </div>
-        </div>
-    </div>
-`;
-            
             // Seção 0: Identificação do Serviço Fiscalizado
             const servicosSelecionados = [];
             const checkboxes = document.querySelectorAll('input[name="servico-fiscalizado"]:checked, input[name="convivencia-publico"]:checked, input[name="protecao-basica-publico"]:checked, input[name="protecao-especial-publico"]:checked, input[name="acolhimento-modalidade"]:checked');
