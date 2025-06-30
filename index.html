@@ -1710,8 +1710,9 @@ html += `
             URL.revokeObjectURL(url);
         }
 
-        // Inicializar
-        renderStep();
+        // Inicializar primeira etapa
+document.getElementById('step-content').innerHTML = stepContent[1];
+renderStep();
 
         // Auto-save a cada 30 segundos
         setInterval(saveCurrentStep, 30000);
