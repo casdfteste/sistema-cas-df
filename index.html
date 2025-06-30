@@ -523,6 +523,32 @@
                 height: 120px;
             }
         }
+        /* Validação de Campos */
+        .field-error {
+            border: 2px solid #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+
+        .field-success {
+            border: 2px solid #10b981 !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -1246,14 +1272,45 @@
                 });
             }
         }
-
+        
         function nextStep() {
-            if (currentStep < totalSteps) {
-                saveCurrentStep();
-                currentStep++;
-                renderStep();
+    if (currentStep < totalSteps) {
+        // Validação simples para campos obrigatórios
+        if (currentStep === 3) {
+            const dataVisita = document.getElementById('data-visita');
+            const nomeResp = document.getElementById('nome-responsavel');
+            
+            let hasError = false;
+            
+            if (!dataVisita || !dataVisita.value) {
+                if (dataVisita) {
+                    dataVisita.classList.add('field-error');
+                    hasError = true;
+                }
+            } else {
+                if (dataVisita) dataVisita.classList.remove('field-error');
+            }
+            
+            if (!nomeResp || !nomeResp.value.trim()) {
+                if (nomeResp) {
+                    nomeResp.classList.add('field-error');
+                    hasError = true;
+                }
+            } else {
+                if (nomeResp) nomeResp.classList.remove('field-error');
+            }
+            
+            if (hasError) {
+                alert('⚠️ Preencha os campos obrigatórios para continuar!');
+                return;
             }
         }
+        
+        saveCurrentStep();
+        currentStep++;
+        renderStep();
+    }
+}
 
         function prevStep() {
             if (currentStep > 1) {
