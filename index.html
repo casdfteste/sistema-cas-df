@@ -1771,11 +1771,13 @@
                     document.getElementById('form-view').style.display = 'block';
                     renderStep();
                 } else {
+                    // Garantir que a tela de login seja exibida
                     document.getElementById('login-view').style.display = 'block';
                     document.getElementById('form-view').style.display = 'none';
                 }
             } catch (e) {
                 console.warn('Erro ao verificar login:', e);
+                // Em caso de erro, sempre mostrar a tela de login
                 document.getElementById('login-view').style.display = 'block';
                 document.getElementById('form-view').style.display = 'none';
             }
