@@ -55,24 +55,6 @@
             opacity: 0.9;
         }
 
-        #logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 6px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        #logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
         /* ========================================
            BARRA DE PROGRESSO
         ======================================== */
@@ -428,476 +410,52 @@
             min-width: 150px;
         }
 
-        /* ========================================
-           NOTIFICAÇÕES
-        ======================================== */
-        #save-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            font-weight: 600;
-            opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.3s ease;
+        .hidden {
+            display: none;
         }
 
         /* ========================================
-           RESPONSIVIDADE COMPLETA
+           RESPONSIVIDADE
         ======================================== */
-        
-        /* TABLET/IPAD (768px - 1024px) */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                margin: 15px;
-                max-width: 95%;
-            }
-            
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .header p {
-                font-size: 1rem;
-            }
-            
-            .form-content {
-                padding: 30px;
-            }
-            
-            .step-title {
-                font-size: 1.6rem;
-                padding: 12px 18px;
-            }
-            
-            .checkbox-group {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-            
-            .form-group input,
-            .form-group textarea,
-            .form-group select {
-                font-size: 1rem;
-                padding: 14px 18px;
-            }
-            
-            .btn {
-                padding: 14px 28px;
-                font-size: 1.1rem;
-                min-height: 48px;
-            }
-            
-            .navigation {
-                padding: 25px 30px;
-            }
-            
-            #logout-btn {
-                padding: 10px 18px;
-                font-size: 1rem;
-            }
-            
-            .report-header h1 {
-                font-size: 1.8rem;
-            }
-        }
-        
-        /* MOBILE (até 768px) */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
             .container {
-                margin: 0;
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            }
-            
-            .header {
-                padding: 25px 20px;
-                text-align: center;
+                margin: 10px;
+                border-radius: 10px;
             }
             
             .header h1 {
-                font-size: 1.8rem;
-                line-height: 1.2;
-                margin-bottom: 8px;
-            }
-            
-            .header p {
-                font-size: 0.95rem;
-                line-height: 1.3;
-            }
-            
-            #logout-btn {
-                position: static !important;
-                margin: 15px auto 0;
-                display: block;
-                padding: 10px 20px;
-                font-size: 0.9rem;
-                min-width: 120px;
-            }
-            
-            .progress-container {
-                padding: 15px 20px;
-            }
-            
-            .progress-text {
-                font-size: 0.85rem;
+                font-size: 2rem;
             }
             
             .form-content {
                 padding: 20px;
             }
             
-            .step-title {
-                font-size: 1.4rem;
-                padding: 12px 15px;
-                margin-bottom: 25px;
-                line-height: 1.3;
+            .navigation {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
             }
-            
-            .form-group {
-                margin-bottom: 20px;
-            }
-            
-            .form-group label {
-                font-size: 0.95rem;
-                margin-bottom: 6px;
-            }
-            
-            .form-group input,
-            .form-group textarea,
-            .form-group select {
-                font-size: 16px; /* Evita zoom no iOS */
-                padding: 14px 16px;
-                border-radius: 8px;
-                min-height: 48px; /* Touch-friendly */
-            }
-            
-            .form-group textarea {
-                min-height: 120px;
-            }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
-            
-            .checkbox-group {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .checkbox-item {
-                padding: 15px;
-                font-size: 0.95rem;
-                min-height: 48px;
-                align-items: center;
-            }
-            
-            .checkbox-item input[type="checkbox"] {
-                width: 20px;
-                height: 20px;
-                margin-top: 0;
-            }
-            
-            .radio-group {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .radio-item {
-                padding: 15px;
-                min-height: 48px;
-                justify-content: flex-start;
-                font-size: 0.95rem;
-            }
-            
-            .navigation {
-                padding: 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .btn {
-                padding: 15px 25px;
-                font-size: 1rem;
-                min-height: 48px;
-                width: 100%;
-                border-radius: 8px;
-            }
-            
-            .step-indicator {
-                font-size: 0.9rem;
-                text-align: center;
-                order: -1;
-            }
-            
+
             .action-buttons {
                 flex-direction: column;
-                gap: 12px;
-                width: 100%;
+                align-items: center;
             }
-            
-            .action-buttons .btn {
-                width: 100%;
-                max-width: 300px;
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
             }
-            
-            .final-actions {
-                padding: 25px 20px;
-            }
-            
-            .report-view {
-                padding: 20px;
-            }
-            
-            .report-header {
-                padding: 20px;
-                margin-bottom: 25px;
-            }
-            
-            .report-header h1 {
-                font-size: 1.5rem;
-                line-height: 1.2;
-            }
-            
-            .report-header p {
-                font-size: 0.95rem;
-            }
-            
-            .report-section {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            
-            .report-section h3 {
-                font-size: 1.1rem;
-                margin-bottom: 12px;
-            }
-            
-            .report-item {
-                margin-bottom: 8px;
-                font-size: 0.9rem;
-                line-height: 1.4;
-            }
-            
-            .report-item strong {
-                display: block;
-                margin-bottom: 3px;
-                min-width: auto;
-            }
-            
-            .form-section {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .form-section h3 {
-                font-size: 1rem;
-                margin-bottom: 12px;
-            }
-            
-            #save-notification {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-                right: 10px;
-                transform: translateY(-100px);
-                font-size: 0.9rem;
-                padding: 10px 15px;
-            }
-            
-            #save-notification.show {
-                transform: translateY(0);
-            }
-        }
-        
-        /* MOBILE MUITO PEQUENO (até 480px) */
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.6rem;
-            }
-            
-            .header p {
-                font-size: 0.9rem;
-            }
-            
-            .step-title {
-                font-size: 1.2rem;
-                padding: 10px 12px;
-            }
-            
-            .form-content {
-                padding: 15px;
-            }
-            
-            .progress-container {
-                padding: 12px 15px;
-            }
-            
-            .navigation {
-                padding: 15px;
-            }
-            
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.95rem;
-                min-height: 44px;
-            }
-            
-            .checkbox-item,
-            .radio-item {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
-            
-            .form-group input,
-            .form-group textarea,
-            .form-group select {
-                padding: 12px 14px;
-                font-size: 16px;
-            }
-            
-            .report-header h1 {
-                font-size: 1.3rem;
-            }
-        }
-        
-        /* LANDSCAPE MOBILE */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .header {
-                padding: 15px 20px;
-            }
-            
-            .header h1 {
-                font-size: 1.6rem;
-            }
-            
-            .step-title {
-                font-size: 1.3rem;
-                margin-bottom: 20px;
-            }
-            
-            .form-content {
-                padding: 15px 20px;
-            }
-            
-            .navigation {
-                padding: 15px 20px;
-            }
-        }
-        
-        /* HIGH DPI DISPLAYS */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .header,
-            .btn,
-            .report-header {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
+
+            .radio-group {
+                flex-direction: column;
             }
         }
 
-        /* ========================================
-           OTIMIZAÇÕES PARA TOUCH E USABILIDADE
-        ======================================== */
-        
-        /* Touch-friendly para todos os dispositivos */
-        .btn,
-        .checkbox-item,
-        .radio-item,
-        input,
-        textarea,
-        select {
-            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
-            touch-action: manipulation;
-        }
-        
-        /* Prevent zoom on input focus (iOS) */
-        input,
-        textarea,
-        select {
-            font-size: 16px !important;
-        }
-        
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Better focus indicators for accessibility */
-        .btn:focus,
-        input:focus,
-        textarea:focus,
-        select:focus,
-        .checkbox-item:focus-within,
-        .radio-item:focus-within {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-        }
-        
-        /* Loading states */
-        .btn:active {
-            transform: scale(0.98);
-        }
-        
-        /* Prevent text selection on buttons */
-        .btn,
-        .checkbox-item,
-        .radio-item {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        /* Improve contrast for better readability */
-        @media (prefers-contrast: high) {
-            .btn-primary {
-                background: #1e40af;
-                border: 2px solid #ffffff;
-            }
-            
-            .field-error {
-                border-color: #dc2626 !important;
-                border-width: 3px !important;
-            }
-            
-            .field-success {
-                border-color: #059669 !important;
-                border-width: 3px !important;
-            }
-        }
-        
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            /* Mantém o design atual por ser sistema governamental */
-            /* Mas melhora a legibilidade em telas escuras */
-            .container {
-                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            }
-        }
-        
-        /* Reduce motion for users who prefer it */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            
-            html {
-                scroll-behavior: auto;
-            }
-        }
-        
-        /* Print optimization */
+        @media print {
             body {
                 background: white;
                 padding: 0;
@@ -909,14 +467,9 @@
             }
             
             .navigation,
-            .final-actions,
-            #logout-btn {
+            .final-actions {
                 display: none !important;
             }
-        }
-
-        .hidden {
-            display: none;
         }
     </style>
 </head>
@@ -939,33 +492,26 @@
                         <div id="login-form">
                             <div style="margin-bottom: 20px; text-align: left;">
                                 <label for="nome-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Nome Completo:</label>
-                                <input type="text" id="nome-conselheiro-login" placeholder="Digite qualquer nome para teste" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
-                                <small style="color: #6b7280; font-size: 0.8rem;">Ex: João da Silva, Maria Santos, etc.</small>
+                                <input type="text" id="nome-conselheiro-login" placeholder="Digite seu nome completo" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
                             </div>
                             
                             <div style="margin-bottom: 25px; text-align: left;">
                                 <label for="cpf-conselheiro-login" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">CPF:</label>
                                 <input type="text" id="cpf-conselheiro-login" placeholder="000.000.000-00" maxlength="14" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
-                                <small style="color: #6b7280; font-size: 0.8rem;">
-                                    <strong>MODO TESTE:</strong> Use qualquer CPF com 11 dígitos<br>
-                                    Ex: 123.456.789-00, 111.222.333-44, etc.
-                                </small>
+                                <small style="color: #6b7280; font-size: 0.85rem;">Apenas conselheiros cadastrados no CAS-DF</small>
                             </div>
                             
                             <button onclick="fazerLogin()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
-                                🧪 Entrar no Sistema (TESTE)
+                                🏛️ Entrar com GOV.BR
                             </button>
                             
                             <div id="login-error" style="display: none; background: #fef2f2; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; color: #ef4444; font-size: 0.9rem;">
                             </div>
                         </div>
                         
-                        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin-top: 20px;">
-                            <p style="color: #92400e; font-size: 0.85rem; margin: 0;">
-                                🧪 <strong>VERSÃO DE DEMONSTRAÇÃO:</strong><br>
-                                • Nome: Qualquer nome fictício<br>
-                                • CPF: Qualquer sequência de 11 números<br>
-                                • Dados não são enviados para servidores reais
+                        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <p style="color: #0c4a6e; font-size: 0.85rem; margin: 0;">
+                                🛡️ <strong>Acesso Seguro:</strong> Autenticação via GOV.BR garante a identidade do conselheiro responsável pelo relatório.
                             </p>
                         </div>
                     </div>
@@ -1006,63 +552,6 @@
                 <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
                     Próximo →
                 </button>
-                
-                <!-- Painel de controle completo para testes -->
-                <div style="margin-top: 15px; text-align: center; padding: 15px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 10px; border: 2px solid #e2e8f0;">
-                    <div style="margin-bottom: 10px;">
-                        <strong style="color: #1e40af;">🧪 PAINEL DE CONTROLE - SISTEMA COMPLETO</strong><br>
-                        <small style="color: #6b7280;">Etapa <span id="debug-step">1</span> de 11</small>
-                    </div>
-                    
-                    <!-- Linha 1: Navegação -->
-                    <div style="margin-bottom: 10px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
-                        <button onclick="window.testeNavegacao()" style="background: #3b82f6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
-                            🧪 Teste Nav
-                        </button>
-                        
-                        <button onclick="window.proximoSemValidacao()" style="background: #10b981; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
-                            ⏭️ Próximo
-                        </button>
-                        
-                        <button onclick="window.menuEtapas()" style="background: #8b5cf6; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
-                            📋 Menu
-                        </button>
-                        
-                        <button onclick="window.irParaEtapa(11)" style="background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 80px;">
-                            🏁 Final
-                        </button>
-                    </div>
-                    
-                    <!-- Linha 2: Dados -->
-                    <div style="margin-bottom: 10px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
-                        <button onclick="window.preencherDadosExemplo()" style="background: #059669; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
-                            ✨ Preencher Tudo
-                        </button>
-                        
-                        <button onclick="window.verificarCompletude()" style="background: #0891b2; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
-                            📊 Verificar
-                        </button>
-                        
-                        <button onclick="window.limparTodosDados()" style="background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; min-width: 110px;">
-                            🗑️ Limpar
-                        </button>
-                    </div>
-                    
-                    <!-- Linha 3: Atalhos rápidos -->
-                    <div style="font-size: 0.7rem; color: #6b7280;">
-                        <strong>Atalhos:</strong>
-                        <button onclick="window.irParaEtapa(1)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">1</button>
-                        <button onclick="window.irParaEtapa(3)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">3</button>
-                        <button onclick="window.irParaEtapa(5)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">5</button>
-                        <button onclick="window.irParaEtapa(7)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">7</button>
-                        <button onclick="window.irParaEtapa(9)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">9</button>
-                        <button onclick="window.irParaEtapa(11)" style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 2px 6px; border-radius: 3px; cursor: pointer; margin: 0 2px; font-size: 0.7rem;">11</button>
-                    </div>
-                    
-                    <div style="margin-top: 8px; font-size: 0.65rem; color: #9ca3af;">
-                        💡 <strong>Dica:</strong> Use "✨ Preencher Tudo" para ver o sistema completo funcionando!
-                    </div>
-                </div>
             </div>
 
             <div class="final-actions" id="final-actions">
@@ -1105,16 +594,13 @@
         </div>
     </div>
 
-    <!-- Notificação de salvamento -->
-    <div id="save-notification"></div>
-
     <script>
         /* ========================================
            VARIÁVEIS GLOBAIS
         ======================================== */
         let currentStep = 1;
         const totalSteps = 11;
-        let formData = {};
+        const formData = {};
         let usuarioLogado = null;
 
         const steps = [
@@ -1575,21 +1061,31 @@
         };
 
         /* ========================================
-           SISTEMA DE LOGIN
+           FUNÇÕES DE FORMATAÇÃO E VALIDAÇÃO
         ======================================== */
         function formatarCPF(cpf) {
+            // Remove tudo que não é dígito
             cpf = cpf.replace(/\D/g, '');
+            
+            // Aplica a formatação
             cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
             cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
             cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            
             return cpf;
         }
 
         function validarCPF(cpf) {
+            // Remove formatação
             cpf = cpf.replace(/\D/g, '');
+            
+            // Verifica se tem 11 dígitos
             if (cpf.length !== 11) return false;
+            
+            // Verifica se não são todos iguais
             if (/^(\d)\1{10}$/.test(cpf)) return false;
             
+            // Validação do dígito verificador
             let soma = 0;
             for (let i = 0; i < 9; i++) {
                 soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -1607,13 +1103,18 @@
             return parseInt(cpf.charAt(9)) === digito1 && parseInt(cpf.charAt(10)) === digito2;
         }
 
+        /* ========================================
+           SISTEMA DE LOGIN
+        ======================================== */
         function fazerLogin() {
             const nome = document.getElementById('nome-conselheiro-login').value.trim();
             const cpf = document.getElementById('cpf-conselheiro-login').value.trim();
             const errorDiv = document.getElementById('login-error');
             
+            // Limpar erro anterior
             errorDiv.style.display = 'none';
             
+            // Validações
             if (!nome) {
                 errorDiv.innerHTML = '⚠️ Digite seu nome completo';
                 errorDiv.style.display = 'block';
@@ -1626,21 +1127,13 @@
                 return;
             }
             
-            // MODO TESTE: Aceitar qualquer CPF formatado
-            const cpfNumeros = cpf.replace(/\D/g, '');
-            if (cpfNumeros.length !== 11) {
-                errorDiv.innerHTML = '⚠️ CPF deve ter 11 dígitos. Use qualquer número para teste (ex: 123.456.789-00)';
+            if (!validarCPF(cpf)) {
+                errorDiv.innerHTML = '⚠️ CPF inválido. Verifique os números digitados.';
                 errorDiv.style.display = 'block';
                 return;
             }
             
-            // Para modo de produção, descomente a linha abaixo:
-            // if (!validarCPF(cpf)) {
-            //     errorDiv.innerHTML = '⚠️ CPF inválido. Verifique os números digitados.';
-            //     errorDiv.style.display = 'block';
-            //     return;
-            // }
-            
+            // Simular autenticação GOV.BR
             usuarioLogado = {
                 nome: nome,
                 cpf: formatarCPF(cpf),
@@ -1648,8 +1141,14 @@
                 idRelatorio: 'CAS-' + new Date().getFullYear() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase()
             };
             
-            localStorage.setItem('usuario-cas-df', JSON.stringify(usuarioLogado));
+            // Salvar dados do usuário
+            try {
+                localStorage.setItem('usuario-cas-df', JSON.stringify(usuarioLogado));
+            } catch (e) {
+                console.warn('LocalStorage não disponível:', e);
+            }
             
+            // Mostrar sucesso e entrar no sistema
             errorDiv.innerHTML = '✅ Autenticação realizada com sucesso! Redirecionando...';
             errorDiv.style.background = '#f0fdf4';
             errorDiv.style.borderColor = '#10b981';
@@ -1659,46 +1158,26 @@
             setTimeout(() => {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('form-view').style.display = 'block';
-                
-                // Garantir que a navegação está visível
-                const navigation = document.querySelector('.navigation');
-                if (navigation) {
-                    navigation.style.display = 'flex';
-                }
-                
-                // Inicializar primeira etapa
-                currentStep = 1;
                 renderStep();
-                
-                console.log('Sistema iniciado - Etapa 1 carregada');
             }, 1500);
         }
 
         function logout() {
-            localStorage.removeItem('usuario-cas-df');
-            localStorage.removeItem('fiscalizacao-cas-df');
-            usuarioLogado = null;
-            formData = {};
-            currentStep = 1;
+            try {
+                localStorage.removeItem('usuario-cas-df');
+                localStorage.removeItem('fiscalizacao-cas-df');
+            } catch (e) {
+                console.warn('LocalStorage não disponível:', e);
+            }
             
+            usuarioLogado = null;
             document.getElementById('login-view').style.display = 'block';
             document.getElementById('form-view').style.display = 'none';
             document.getElementById('report-view').classList.remove('show');
             
+            // Limpar campos de login
             document.getElementById('nome-conselheiro-login').value = '';
             document.getElementById('cpf-conselheiro-login').value = '';
-            document.getElementById('login-error').style.display = 'none';
-        }
-
-        function adicionarBotaoLogout() {
-            const header = document.querySelector('.header');
-            if (header && usuarioLogado && !document.getElementById('logout-btn')) {
-                const logoutBtn = document.createElement('button');
-                logoutBtn.id = 'logout-btn';
-                logoutBtn.innerHTML = '🚪 Sair';
-                logoutBtn.onclick = logout;
-                header.appendChild(logoutBtn);
-            }
         }
 
         /* ========================================
@@ -1710,81 +1189,56 @@
             document.getElementById('progress-percent').textContent = percent;
             document.getElementById('progress-fill').style.width = percent + '%';
             document.getElementById('step-name').textContent = steps[currentStep - 1];
-            
-            // Atualizar debug info
-            updateDebugInfo();
-            
-            console.log(`Progresso atualizado: ${currentStep}/${totalSteps} (${percent}%)`);
         }
 
         function renderStep() {
             // Mostrar conteúdo da etapa
             document.getElementById('step-content').innerHTML = stepContent[currentStep];
             
-            // Adicionar botão de logout
+            // Adicionar botão de logout se usuário logado
             adicionarBotaoLogout();
             
-            // Configurar event listeners
-            setTimeout(() => {
-                loadStepData();
-                setupEventListeners();
-                
-                if (currentStep === 11) {
+            // Carregar dados salvos
+            loadStepData();
+            
+            // Atualizar progresso
+            updateProgress();
+            
+            // Atualizar botões de navegação
+            document.getElementById('prev-btn').disabled = currentStep === 1;
+            document.getElementById('next-btn').disabled = currentStep === totalSteps;
+            
+            // Mostrar/esconder ações finais
+            if (currentStep === totalSteps) {
+                document.getElementById('next-btn').style.display = 'none';
+                document.getElementById('final-actions').classList.add('show');
+            } else {
+                document.getElementById('next-btn').style.display = 'inline-block';
+                document.getElementById('final-actions').classList.remove('show');
+            }
+            
+            // Definir data atual para assinatura na etapa 11
+            if (currentStep === 11) {
+                setTimeout(() => {
                     const dataAssinatura = document.getElementById('data-assinatura');
                     if (dataAssinatura && !dataAssinatura.value) {
                         dataAssinatura.value = new Date().toISOString().split('T')[0];
                     }
                     
+                    // Preencher nome do conselheiro automaticamente
                     const nomeField = document.getElementById('nome-conselheiro');
                     if (nomeField && usuarioLogado && !nomeField.value) {
                         nomeField.value = usuarioLogado.nome;
                     }
-                }
-            }, 100);
-            
-            // Atualizar progresso
-            updateProgress();
-            
-            // Configurar botões de navegação
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const finalActions = document.getElementById('final-actions');
-            
-            // Garantir que os botões existem
-            if (prevBtn && nextBtn) {
-                // Botão anterior
-                prevBtn.disabled = currentStep === 1;
-                prevBtn.style.opacity = currentStep === 1 ? '0.5' : '1';
-                
-                // Botão próximo
-                if (currentStep === totalSteps) {
-                    nextBtn.style.display = 'none';
-                    finalActions.classList.add('show');
-                } else {
-                    nextBtn.style.display = 'inline-block';
-                    nextBtn.disabled = false;
-                    nextBtn.style.opacity = '1';
-                    finalActions.classList.remove('show');
-                }
-                
-                // Mostrar navegação
-                const navigation = document.querySelector('.navigation');
-                if (navigation) {
-                    navigation.style.display = 'flex';
-                }
+                }, 100);
             }
-            
-            console.log(`Renderizada etapa ${currentStep} de ${totalSteps}`);
         }
 
         function nextStep() {
-            console.log(`Tentando ir para próxima etapa. Atual: ${currentStep}`);
-            
             if (currentStep < totalSteps) {
                 // Validar campos obrigatórios
                 if (!validateCurrentStep()) {
-                    console.log('Validação falhou - permanecendo na etapa atual');
-                    return false;
+                    return; // Não avança se validação falhar
                 }
                 
                 // Salvar dados da etapa atual
@@ -1792,303 +1246,18 @@
                 
                 // Avançar para próxima etapa
                 currentStep++;
-                console.log(`Avançando para etapa ${currentStep}`);
-                
-                // Re-renderizar
                 renderStep();
                 
                 // Mostrar notificação de progresso
                 showSaveNotification();
-                
-                // Scroll para o topo
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                return true;
             }
-            
-            console.log('Já está na última etapa');
-            return false;
         }
 
         function prevStep() {
-            console.log(`Tentando voltar etapa. Atual: ${currentStep}`);
-            
             if (currentStep > 1) {
-                // Salvar dados da etapa atual
                 saveCurrentStep();
-                
-                // Voltar etapa
                 currentStep--;
-                console.log(`Voltando para etapa ${currentStep}`);
-                
-                // Re-renderizar
                 renderStep();
-                
-                // Scroll para o topo
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                return true;
-            }
-            
-            console.log('Já está na primeira etapa');
-            return false;
-        }
-
-        // Funções globais para garantir acesso
-        window.nextStep = nextStep;
-        window.prevStep = prevStep;
-        
-        // Função de teste para debug
-        window.testeNavegacao = function() {
-            console.log('=== TESTE DE NAVEGAÇÃO ===');
-            console.log('Etapa atual:', currentStep);
-            console.log('Total de etapas:', totalSteps);
-            
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            
-            console.log('Botão anterior existe:', !!prevBtn);
-            console.log('Botão próximo existe:', !!nextBtn);
-            
-            if (prevBtn) console.log('Botão anterior desabilitado:', prevBtn.disabled);
-            if (nextBtn) console.log('Botão próximo desabilitado:', nextBtn.disabled);
-            
-            // Teste rápido - ir para próxima etapa
-            if (currentStep < totalSteps) {
-                alert(`Testando navegação: Indo da etapa ${currentStep} para ${currentStep + 1}`);
-                nextStep();
-            } else {
-                alert('Já está na última etapa!');
-            }
-        };
-        
-        // Função para pular para qualquer etapa (só para teste)
-        window.irParaEtapa = function(etapa) {
-            if (etapa >= 1 && etapa <= totalSteps) {
-                saveCurrentStep(); // Salvar dados atual
-                currentStep = etapa;
-                renderStep();
-                console.log(`Navegou diretamente para etapa ${etapa}`);
-                return true;
-            }
-            console.log(`Etapa ${etapa} inválida. Use 1-${totalSteps}`);
-            return false;
-        };
-        
-        // Função para testar todas as etapas
-        window.testarTodasEtapas = function() {
-            console.log('=== TESTANDO TODAS AS ETAPAS ===');
-            
-            for(let i = 1; i <= totalSteps; i++) {
-                try {
-                    if (stepContent[i]) {
-                        console.log(`✅ Etapa ${i}: OK`);
-                    } else {
-                        console.log(`❌ Etapa ${i}: SEM CONTEÚDO`);
-                    }
-                } catch(e) {
-                    console.log(`❌ Etapa ${i}: ERRO -`, e.message);
-                }
-            }
-            
-            alert('Teste concluído! Veja o console (F12) para detalhes.');
-        };
-        
-        // Função para navegar sem validação (só para teste)
-        window.proximoSemValidacao = function() {
-            if (currentStep < totalSteps) {
-                saveCurrentStep();
-                currentStep++;
-                renderStep();
-                console.log(`Navegou para etapa ${currentStep} (sem validação)`);
-                return true;
-            }
-            return false;
-        };
-        
-        // Função para preencher dados de exemplo em todas as etapas
-        window.preencherDadosExemplo = function() {
-            console.log('Preenchendo dados de exemplo...');
-            
-            // Dados de exemplo para todas as etapas
-            const dadosExemplo = {
-                // Etapa 1 - Serviços (será preenchido via checkboxes)
-                
-                // Etapa 2 - Documentos
-                'parecer-tecnico': 'PT-2024-001',
-                'nota-tecnica': 'NT-2024-005',
-                'plano-acao': '2024',
-                'relatorio-atividades': '2023',
-                
-                // Etapa 3 - Dados da Visita
-                'data-visita': new Date().toISOString().split('T')[0],
-                'horario': '14:30',
-                'nome-responsavel': 'Maria Silva Santos',
-                'funcao-responsavel': 'Coordenadora Geral',
-                
-                // Etapa 4 - Dados da Entidade
-                'nome-entidade': 'Instituto Social Esperança',
-                'cnpj-entidade': '12.345.678/0001-90',
-                'responsavel-legal': 'João Pedro Oliveira',
-                'telefone-entidade': '(61) 3333-4444',
-                'email-entidade': 'contato@institutosocial.org.br',
-                'endereco-entidade': 'QN 15 Conjunto A Casa 23, Riacho Fundo I - Brasília/DF - CEP: 71805-015',
-                'licenca-funcionamento': 'ALV-2024-0123',
-                
-                // Etapa 5 - Público-Alvo
-                'publico-alvo': 'Crianças e adolescentes de 6 a 17 anos em situação de vulnerabilidade social, prioritariamente de famílias beneficiárias do Programa Bolsa Família e cadastradas no CadÚnico.',
-                'capacidade-atendimento': '60',
-                'atendidos-atual': '45',
-                
-                // Etapa 6 - Formas de Acesso
-                'outras-formas-acesso': 'Divulgação em escolas da rede pública, parcerias com Unidades Básicas de Saúde e campanhas educativas na comunidade.',
-                'criterios-elegibilidade': 'Estar inscrito no CadÚnico, renda familiar per capita até meio salário mínimo, residir na área de abrangência do serviço, estar matriculado na rede pública de ensino.',
-                
-                // Etapa 7 - Equipe
-                'numero-funcionarios': '8',
-                'numero-voluntarios': '12',
-                'composicao-equipe': '1 Coordenador (Assistente Social), 2 Educadores Sociais (Pedagogia), 1 Psicólogo, 1 Arte-educador, 2 Monitores (Ensino Médio), 1 Auxiliar Administrativo.',
-                'capacitacao-equipe': 'Formação continuada em direitos da criança e adolescente, oficinas de arte-educação, curso de primeiros socorros, capacitação em Sistema de Informação do SUAS.',
-                
-                // Etapa 8 - Infraestrutura
-                'condicoes-fisicas': 'Imóvel próprio em bom estado de conservação, com 8 salas amplas, 2 banheiros adaptados, cozinha, refeitório, área de recreação coberta e quadra esportiva descoberta.',
-                'acessibilidade': 'Possui rampa de acesso principal, banheiros adaptados com barras de apoio, portas com vão livre adequado, sinalização tátil em pontos estratégicos.',
-                'equipamentos': 'Computadores, projetor multimídia, sistema de som, materiais pedagógicos, jogos educativos, instrumentos musicais, materiais esportivos.',
-                'seguranca': 'Portão com controle de acesso, sistema de câmeras, extintor de incêndio, saídas de emergência sinalizadas, kit de primeiros socorros.',
-                
-                // Etapa 9 - Funcionamento
-                'horario-funcionamento': 'Segunda a sexta-feira das 7h às 17h',
-                'dias-funcionamento': 'Segunda a sexta-feira',
-                'atividades-desenvolvidas': 'Acompanhamento escolar, oficinas de arte e cultura, atividades esportivas, rodas de conversa sobre cidadania, passeios educativos, atendimento psicossocial individual e familiar.',
-                'metodologia': 'Metodologia participativa baseada na pedagogia social, com foco no protagonismo juvenil, desenvolvimento de competências socioemocionais e fortalecimento de vínculos familiares e comunitários.',
-                'fluxo-atendimento': 'Acolhida → Entrevista social → Elaboração do Plano Individual de Atendimento → Participação nas atividades → Acompanhamento sistemático → Reavaliação periódica.',
-                
-                // Etapa 10 - Articulação
-                'articulacao-rede': 'Articulação regular com CRAS, CREAS, escolas públicas da região, Unidades Básicas de Saúde, Conselho Tutelar e demais equipamentos da rede socioassistencial.',
-                'parcerias': 'Secretaria de Educação do DF, Secretaria de Saúde, Polícia Militar (Programa Educacional de Resistência às Drogas), empresas locais para doações.',
-                'encaminhamentos': 'Encaminhamentos para serviços de saúde, documentação civil, benefícios sociais, cursos profissionalizantes, inserção no mercado de trabalho para adolescentes.',
-                'territorio-atuacao': 'Riacho Fundo I e adjacências, atendendo prioritariamente as quadras QN 13 a QN 18 e áreas circunvizinhas em situação de maior vulnerabilidade.',
-                
-                // Etapa 11 - Voto/Conclusão
-                'analises-tecnicas': 'A entidade demonstra adequado funcionamento dos serviços ofertados, com metodologia consistente e equipe técnica qualificada. A infraestrutura atende aos padrões mínimos exigidos.',
-                'pontos-positivos': 'Excelente articulação com a rede, metodologia bem estruturada, equipe comprometida, boa infraestrutura, alto índice de frequência dos usuários.',
-                'pontos-melhoria': 'Necessário ampliar as ações de fortalecimento familiar, criar protocolo de acompanhamento de egressos, melhorar registro das atividades desenvolvidas.',
-                'recomendacoes': 'Implementar grupos sistemáticos com famílias, elaborar plano de acompanhamento pós-desligamento, capacitar equipe em registro e documentação das ações.',
-                'justificativa-voto': 'A entidade cumpre adequadamente os objetivos propostos e apresenta resultados positivos no desenvolvimento dos usuários atendidos.',
-                'nome-conselheiro': usuarioLogado ? usuarioLogado.nome : 'Conselheiro Exemplo',
-                'registro-conselheiro': 'CAS-DF-001/2024',
-                'data-assinatura': new Date().toISOString().split('T')[0],
-                'local-assinatura': 'Brasília - DF'
-            };
-            
-            // Preencher checkboxes da etapa 1
-            const servicosExemplo = [
-                'convivencia-fortalecimento',
-                'protecao-social-basica',
-                'acoes-defesa-direitos'
-            ];
-            
-            const faixaEtariaExemplo = [
-                'criancas',
-                'adolescentes'
-            ];
-            
-            const formasAcessoExemplo = [
-                'demanda-espontanea',
-                'encaminhamento',
-                'busca-ativa'
-            ];
-            
-            // Aplicar os dados
-            Object.assign(formData, dadosExemplo);
-            
-            // Aplicar checkboxes
-            if (!formData.checkboxes) formData.checkboxes = {};
-            formData.checkboxes['servico-fiscalizado'] = servicosExemplo;
-            formData.checkboxes['faixa-etaria'] = faixaEtariaExemplo;
-            formData.checkboxes['formas-acesso'] = formasAcessoExemplo;
-            
-            // Aplicar radio button
-            formData['voto-final'] = 'aprovado-ressalvas';
-            
-            // Salvar no localStorage
-            localStorage.setItem('fiscalizacao-cas-df', JSON.stringify(formData));
-            
-            // Recarregar dados na etapa atual
-            loadStepData();
-            
-            alert('✅ Dados de exemplo preenchidos em todas as 11 etapas!\n\nAgora você pode navegar por todas as etapas e ver o formulário completo.');
-            console.log('Dados de exemplo aplicados:', formData);
-        };
-        
-        // Função para limpar todos os dados
-        window.limparTodosDados = function() {
-            if (confirm('⚠️ Tem certeza que deseja limpar TODOS os dados?\n\nEsta ação não pode ser desfeita.')) {
-                formData = {};
-                localStorage.removeItem('fiscalizacao-cas-df');
-                loadStepData();
-                alert('🗑️ Todos os dados foram removidos!');
-                console.log('Dados limpos');
-            }
-        };
-        
-        // Função para verificar completude do formulário
-        window.verificarCompletude = function() {
-            let etapasCompletas = 0;
-            let etapasIncompletas = [];
-            
-            // Verificar cada etapa
-            for (let etapa = 1; etapa <= totalSteps; etapa++) {
-                const camposObrigatorios = requiredFields[etapa] || [];
-                let etapaCompleta = true;
-                
-                if (etapa === 1) {
-                    // Verificar se tem serviços selecionados
-                    if (!formData.checkboxes || !formData.checkboxes['servico-fiscalizado'] || formData.checkboxes['servico-fiscalizado'].length === 0) {
-                        etapaCompleta = false;
-                    }
-                }
-                
-                // Verificar campos obrigatórios
-                camposObrigatorios.forEach(campo => {
-                    if (!formData[campo] || formData[campo].trim() === '') {
-                        etapaCompleta = false;
-                    }
-                });
-                
-                if (etapaCompleta) {
-                    etapasCompletas++;
-                } else {
-                    etapasIncompletas.push(etapa);
-                }
-            }
-            
-            console.log(`Completude: ${etapasCompletas}/${totalSteps} etapas completas`);
-            console.log('Etapas incompletas:', etapasIncompletas);
-            
-            alert(`📊 RELATÓRIO DE COMPLETUDE\n\n✅ Etapas completas: ${etapasCompletas}/${totalSteps}\n❌ Etapas incompletas: ${etapasIncompletas.length > 0 ? etapasIncompletas.join(', ') : 'Nenhuma'}\n\n${etapasCompletas === totalSteps ? '🎉 Formulário 100% completo!' : '⚠️ Complete as etapas pendentes'}`);
-        };
-        
-        // Função para navegação rápida por etapas
-        window.menuEtapas = function() {
-            const opcoes = steps.map((nome, index) => `${index + 1}. ${nome}`).join('\n');
-            const escolha = prompt(`📋 NAVEGAÇÃO RÁPIDA\n\nEscolha a etapa (1-${totalSteps}):\n\n${opcoes}\n\nDigite o número da etapa:`);
-            
-            if (escolha) {
-                const etapa = parseInt(escolha);
-                if (etapa >= 1 && etapa <= totalSteps) {
-                    window.irParaEtapa(etapa);
-                } else {
-                    alert('❌ Etapa inválida! Use números de 1 a ' + totalSteps);
-                }
-            }
-        };
-        
-        // Atualizar debug step
-        function updateDebugInfo() {
-            const debugStep = document.getElementById('debug-step');
-            if (debugStep) {
-                debugStep.textContent = currentStep;
             }
         }
 
@@ -2100,6 +1269,7 @@
             let isValid = true;
             let errors = [];
             
+            // Limpar validações anteriores
             clearValidationMessages();
             
             // Validação especial para Etapa 1 (checkboxes de serviços)
@@ -2109,6 +1279,7 @@
                     errors.push('Selecione pelo menos um serviço para fiscalização');
                     isValid = false;
                     
+                    // Destacar seção de serviços
                     const checkboxGroups = document.querySelectorAll('.checkbox-group');
                     checkboxGroups.forEach(group => {
                         group.style.border = '2px solid #ef4444';
@@ -2150,47 +1321,47 @@
             // Mostrar resumo de erros se houver
             if (!isValid) {
                 showValidationSummary(errors);
-                console.log(`Validação falhou na etapa ${currentStep}:`, errors);
-            } else {
-                console.log(`Validação OK na etapa ${currentStep}`);
             }
             
             return isValid;
         }
 
         function addValidationMessage(field, message, type) {
+            // Remover mensagem anterior
             const existingMessage = field.parentElement.querySelector('.error-message, .success-message');
             if (existingMessage) {
                 existingMessage.remove();
             }
             
+            // Criar nova mensagem
             const messageElement = document.createElement('span');
             messageElement.className = type === 'error' ? 'error-message' : 'success-message';
             messageElement.textContent = message;
+            
+            // Inserir após o campo
             field.parentElement.appendChild(messageElement);
         }
 
         function clearValidationMessages() {
+            // Remover classes de erro/sucesso
             document.querySelectorAll('.field-error, .field-success').forEach(field => {
                 field.classList.remove('field-error', 'field-success');
             });
             
+            // Remover mensagens
             document.querySelectorAll('.error-message, .success-message').forEach(message => {
                 message.remove();
             });
             
+            // Limpar destaque de checkboxes
             document.querySelectorAll('.checkbox-group').forEach(group => {
                 group.style.border = '';
                 group.style.borderRadius = '';
             });
-            
-            const validationSummary = document.getElementById('validation-summary');
-            if (validationSummary) {
-                validationSummary.remove();
-            }
         }
 
         function showValidationSummary(errors) {
+            // Criar ou atualizar resumo de validação
             let summaryElement = document.getElementById('validation-summary');
             
             if (!summaryElement) {
@@ -2218,6 +1389,7 @@
                 </p>
             `;
             
+            // Scroll para o topo
             summaryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -2227,23 +1399,13 @@
         function saveCurrentStep() {
             const inputs = document.querySelectorAll('#step-content input, #step-content textarea, #step-content select');
             
-            // Inicializar arrays se não existirem
-            if (!formData.checkboxes) formData.checkboxes = {};
-            
             inputs.forEach(input => {
                 if (input.type === 'checkbox') {
-                    if (!formData.checkboxes[input.name]) {
-                        formData.checkboxes[input.name] = [];
-                    }
-                    
                     if (input.checked) {
+                        if (!formData.checkboxes) formData.checkboxes = {};
+                        if (!formData.checkboxes[input.name]) formData.checkboxes[input.name] = [];
                         if (!formData.checkboxes[input.name].includes(input.value)) {
                             formData.checkboxes[input.name].push(input.value);
-                        }
-                    } else {
-                        const index = formData.checkboxes[input.name].indexOf(input.value);
-                        if (index > -1) {
-                            formData.checkboxes[input.name].splice(index, 1);
                         }
                     }
                 } else if (input.type === 'radio') {
@@ -2255,18 +1417,23 @@
                 }
             });
             
-            localStorage.setItem('fiscalizacao-cas-df', JSON.stringify(formData));
+            // Salvar no localStorage se disponível
+            try {
+                localStorage.setItem('fiscalizacao-cas-df', JSON.stringify(formData));
+            } catch (e) {
+                console.warn('LocalStorage não disponível:', e);
+            }
         }
 
         function loadStepData() {
-            const savedData = localStorage.getItem('fiscalizacao-cas-df');
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    Object.assign(formData, parsedData);
-                } catch (e) {
-                    console.warn('Erro ao carregar dados salvos:', e);
+            // Carregar do localStorage se disponível
+            try {
+                const savedData = localStorage.getItem('fiscalizacao-cas-df');
+                if (savedData) {
+                    Object.assign(formData, JSON.parse(savedData));
                 }
+            } catch (e) {
+                console.warn('Erro ao carregar dados salvos:', e);
             }
 
             setTimeout(() => {
@@ -2284,65 +1451,45 @@
                         input.value = formData[input.id];
                     }
                 });
-            }, 50);
-        }
-
-        /* ========================================
-           CONFIGURAÇÃO DE EVENT LISTENERS
-        ======================================== */
-        function setupEventListeners() {
-            const inputs = document.querySelectorAll('#step-content input, #step-content textarea, #step-content select');
-            
-            inputs.forEach(input => {
-                input.addEventListener('blur', function() {
-                    saveCurrentStep();
-                });
-                
-                input.addEventListener('input', function() {
-                    if (this.classList.contains('field-error') && this.value.trim()) {
-                        this.classList.remove('field-error');
-                        this.classList.add('field-success');
-                        
-                        const errorMessage = this.parentElement.querySelector('.error-message');
-                        if (errorMessage) {
-                            errorMessage.className = 'success-message';
-                            errorMessage.textContent = '✓ Preenchido corretamente';
-                        }
-                    }
-                });
-                
-                if (input.type === 'checkbox' || input.type === 'radio') {
-                    input.addEventListener('change', function() {
-                        saveCurrentStep();
-                        
-                        if (this.checked) {
-                            const validationSummary = document.getElementById('validation-summary');
-                            if (validationSummary) {
-                                validationSummary.remove();
-                            }
-                            
-                            if (this.name === 'servico-fiscalizado') {
-                                document.querySelectorAll('.checkbox-group').forEach(group => {
-                                    group.style.border = '';
-                                    group.style.borderRadius = '';
-                                });
-                            }
-                        }
-                    });
-                }
-            });
+            }, 100);
         }
 
         /* ========================================
            NOTIFICAÇÃO DE SALVAMENTO
         ======================================== */
         function showSaveNotification() {
-            const notification = document.getElementById('save-notification');
+            // Criar elemento de notificação se não existir
+            let notification = document.getElementById('save-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'save-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    font-weight: 600;
+                    opacity: 0;
+                    transform: translateX(100px);
+                    transition: all 0.3s ease;
+                `;
+                document.body.appendChild(notification);
+            }
+            
             notification.innerHTML = '✅ Dados salvos automaticamente';
             
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateX(0)';
+            // Mostrar notificação
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
             
+            // Esconder após 3 segundos
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateX(100px)';
@@ -2356,6 +1503,7 @@
             const reportContent = document.getElementById('report-content');
             const reportDate = document.getElementById('report-date');
             
+            // Atualizar data do relatório
             const now = new Date();
             reportDate.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
             
@@ -2365,7 +1513,7 @@
             const servicosSelecionados = [];
             if (formData.checkboxes && formData.checkboxes['servico-fiscalizado']) {
                 formData.checkboxes['servico-fiscalizado'].forEach(value => {
-                    const serviceLabels = {
+                    const serviceNames = {
                         'acoes-assessoramento': '1. Ações de Assessoramento',
                         'acoes-defesa-direitos': '2. Ações de Defesa e Garantia de Direitos',
                         'promocao-integracao-trabalho': '3. Promoção da integração ao mundo do trabalho',
@@ -2375,7 +1523,7 @@
                         'abordagem-social': '7. Serviço de Abordagem Social',
                         'acolhimento': '8. Serviço de Acolhimento'
                     };
-                    servicosSelecionados.push(serviceLabels[value] || value);
+                    servicosSelecionados.push(serviceNames[value] || value);
                 });
             }
 
@@ -2408,6 +1556,7 @@
                     const label = getFieldLabel(fieldId);
                     let value = formData[fieldId] || 'Não informado';
                     
+                    // Formatar data se necessário
                     if (fieldId === 'data-visita' && value !== 'Não informado') {
                         value = new Date(value).toLocaleDateString('pt-BR');
                     }
@@ -2486,7 +1635,7 @@
         }
 
         function getFieldLabel(fieldId) {
-            const labelMap = {
+            const fieldLabels = {
                 'parecer-tecnico': 'Parecer(s) Técnico(s) nº',
                 'nota-tecnica': 'Nota(s) Técnica(s) nº',
                 'plano-acao': 'Plano de Ação (Ano)',
@@ -2525,7 +1674,8 @@
                 'encaminhamentos': 'Encaminhamentos realizados',
                 'territorio-atuacao': 'Território de atuação'
             };
-            return labelMap[fieldId] || fieldId;
+            
+            return fieldLabels[fieldId] || fieldId;
         }
 
         function showReport() {
@@ -2562,6 +1712,12 @@
                 }
             }
             
+            if (usuarioLogado) {
+                exportText += `\nConselheiro: ${usuarioLogado.nome}\n`;
+                exportText += `CPF: ${usuarioLogado.cpf}\n`;
+                exportText += `ID do Relatório: ${usuarioLogado.idRelatorio}\n`;
+            }
+            
             exportText += `\n\nRelatório gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}\n`;
             exportText += "Sistema de Fiscalização CAS-DF - Conselheiros de Assistência Social do Distrito Federal\n";
             
@@ -2577,22 +1733,49 @@
         }
 
         /* ========================================
+           BOTÃO DE LOGOUT
+        ======================================== */
+        function adicionarBotaoLogout() {
+            const header = document.querySelector('.header');
+            if (header && usuarioLogado && !document.getElementById('logout-btn')) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.id = 'logout-btn';
+                logoutBtn.innerHTML = '🚪 Sair';
+                logoutBtn.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                    border: 1px solid rgba(255,255,255,0.3);
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                `;
+                logoutBtn.onclick = logout;
+                header.appendChild(logoutBtn);
+            }
+        }
+
+        /* ========================================
            INICIALIZAÇÃO DO SISTEMA
         ======================================== */
         document.addEventListener('DOMContentLoaded', function() {
             // Verificar se usuário já está logado
-            const usuarioSalvo = localStorage.getItem('usuario-cas-df');
-            if (usuarioSalvo) {
-                try {
+            try {
+                const usuarioSalvo = localStorage.getItem('usuario-cas-df');
+                if (usuarioSalvo) {
                     usuarioLogado = JSON.parse(usuarioSalvo);
                     document.getElementById('login-view').style.display = 'none';
                     document.getElementById('form-view').style.display = 'block';
                     renderStep();
-                } catch (e) {
-                    console.warn('Erro ao carregar usuário:', e);
-                    logout();
+                } else {
+                    document.getElementById('login-view').style.display = 'block';
+                    document.getElementById('form-view').style.display = 'none';
                 }
-            } else {
+            } catch (e) {
+                console.warn('Erro ao verificar login:', e);
                 document.getElementById('login-view').style.display = 'block';
                 document.getElementById('form-view').style.display = 'none';
             }
@@ -2613,176 +1796,60 @@
             });
             
             // Auto-save a cada 30 segundos
-            setInterval(() => {
-                if (document.getElementById('form-view').style.display !== 'none') {
-                    saveCurrentStep();
+            setInterval(saveCurrentStep, 30000);
+            
+            // Validação em tempo real
+            document.addEventListener('input', function(e) {
+                // Remover erro quando campo for preenchido
+                if (e.target.classList.contains('field-error')) {
+                    if (e.target.value.trim()) {
+                        e.target.classList.remove('field-error');
+                        e.target.classList.add('field-success');
+                        
+                        const errorMessage = e.target.parentElement.querySelector('.error-message');
+                        if (errorMessage) {
+                            errorMessage.className = 'success-message';
+                            errorMessage.textContent = '✓ Preenchido corretamente';
+                        }
+                    }
                 }
-            }, 30000);
-            
-            // Otimizações para mobile
-            setupMobileOptimizations();
-        });
-        
-        /* ========================================
-           OTIMIZAÇÕES PARA DISPOSITIVOS MÓVEIS
-        ======================================== */
-        function setupMobileOptimizations() {
-            // Detectar se é dispositivo móvel
-            const isMobile = window.innerWidth <= 768;
-            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-            
-            // Ajustar viewport para iOS
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                const viewport = document.querySelector('meta[name="viewport"]');
-                viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-            }
-            
-            // Melhorar experiência de toque
-            if (isMobile || isTablet) {
-                // Adicionar classe para dispositivos touch
-                document.body.classList.add('touch-device');
                 
-                // Otimizar toque em checkboxes e radios
-                document.addEventListener('touchstart', function(e) {
-                    if (e.target.closest('.checkbox-item') || e.target.closest('.radio-item')) {
-                        e.target.closest('.checkbox-item, .radio-item').style.backgroundColor = '#e0f2fe';
-                    }
-                });
-                
-                document.addEventListener('touchend', function(e) {
-                    if (e.target.closest('.checkbox-item') || e.target.closest('.radio-item')) {
-                        setTimeout(() => {
-                            e.target.closest('.checkbox-item, .radio-item').style.backgroundColor = '';
-                        }, 150);
-                    }
-                });
-                
-                // Scroll suave para validações
-                const originalShowValidationSummary = showValidationSummary;
-                showValidationSummary = function(errors) {
-                    originalShowValidationSummary(errors);
-                    setTimeout(() => {
-                        const summary = document.getElementById('validation-summary');
-                        if (summary) {
-                            summary.scrollIntoView({ 
-                                behavior: 'smooth', 
-                                block: 'start',
-                                inline: 'nearest'
+                // Remover resumo de validação se existir
+                const validationSummary = document.getElementById('validation-summary');
+                if (validationSummary && e.target.value.trim()) {
+                    validationSummary.remove();
+                }
+            });
+            
+            // Validação para checkboxes e radios
+            document.addEventListener('change', function(e) {
+                if (e.target.type === 'checkbox' || e.target.type === 'radio') {
+                    // Remover destaque de erro se checkbox/radio for selecionado
+                    if (e.target.checked) {
+                        const validationSummary = document.getElementById('validation-summary');
+                        if (validationSummary) {
+                            validationSummary.remove();
+                        }
+                        
+                        // Remover borda vermelha de checkboxes
+                        if (e.target.name === 'servico-fiscalizado') {
+                            document.querySelectorAll('.checkbox-group').forEach(group => {
+                                group.style.border = '';
+                                group.style.borderRadius = '';
                             });
                         }
-                    }, 100);
-                };
-            }
-            
-            // Ajustar altura da viewport em móveis (endereço de URL)
-            function setViewportHeight() {
-                const vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', `${vh}px`);
-            }
-            
-            setViewportHeight();
-            window.addEventListener('resize', setViewportHeight);
-            window.addEventListener('orientationchange', () => {
-                setTimeout(setViewportHeight, 100);
-            });
-            
-            // Melhorar notificações em mobile
-            const originalShowSaveNotification = showSaveNotification;
-            showSaveNotification = function() {
-                const notification = document.getElementById('save-notification');
-                
-                if (isMobile) {
-                    notification.style.cssText = `
-                        position: fixed;
-                        top: 10px;
-                        left: 10px;
-                        right: 10px;
-                        background: linear-gradient(135deg, #10b981, #059669);
-                        color: white;
-                        padding: 12px 16px;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                        z-index: 1000;
-                        font-weight: 600;
-                        text-align: center;
-                        opacity: 0;
-                        transform: translateY(-50px);
-                        transition: all 0.3s ease;
-                    `;
-                }
-                
-                notification.innerHTML = '✅ Dados salvos automaticamente';
-                
-                notification.style.opacity = '1';
-                notification.style.transform = isMobile ? 'translateY(0)' : 'translateX(0)';
-                
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    notification.style.transform = isMobile ? 'translateY(-50px)' : 'translateX(100px)';
-                }, 3000);
-            };
-        }
-        
-        /* ========================================
-           NAVEGAÇÃO OTIMIZADA PARA TOUCH
-        ======================================== */
-        function enhancedNextStep() {
-            // Vibração em dispositivos suportados
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
-            
-            nextStep();
-        }
-        
-        function enhancedPrevStep() {
-            if (navigator.vibrate) {
-                navigator.vibrate(30);
-            }
-            
-            prevStep();
-        }
-        
-        // Gestos de swipe para navegação (opcional)
-        function setupSwipeNavigation() {
-            let startX = null;
-            let startY = null;
-            
-            document.addEventListener('touchstart', function(e) {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            });
-            
-            document.addEventListener('touchend', function(e) {
-                if (!startX || !startY) return;
-                
-                const endX = e.changedTouches[0].clientX;
-                const endY = e.changedTouches[0].clientY;
-                
-                const diffX = startX - endX;
-                const diffY = startY - endY;
-                
-                // Verificar se é um swipe horizontal
-                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-                    // Swipe para esquerda (próximo)
-                    if (diffX > 0 && currentStep < totalSteps) {
-                        enhancedNextStep();
-                    }
-                    // Swipe para direita (anterior)
-                    else if (diffX < 0 && currentStep > 1) {
-                        enhancedPrevStep();
                     }
                 }
-                
-                startX = null;
-                startY = null;
             });
-        }
-        
-        // Ativar navegação por swipe apenas em dispositivos touch
-        if ('ontouchstart' in window) {
-            setTimeout(setupSwipeNavigation, 1000);
-        }
+            
+            // Auto-save quando mudar de campo
+            document.addEventListener('blur', function(e) {
+                if (e.target.matches('#step-content input, #step-content textarea, #step-content select')) {
+                    saveCurrentStep();
+                    showSaveNotification();
+                }
+            }, true);
+        });
     </script>
 </body>
 </html>
